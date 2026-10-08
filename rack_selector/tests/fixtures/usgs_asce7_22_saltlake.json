@@ -1,0 +1,14 @@
+{
+  "_comment": "Trimmed USGS ASCE7-22 'data' object used for offline tests. Values are representative high-seismic (illustrative, not for design).",
+  "pgam": 0.6,
+  "sms": 1.5,
+  "sm1": 0.9,
+  "sds": 1.0,
+  "sd1": 0.6,
+  "sdc": "D",
+  "ss": 1.5,
+  "s1": 0.55,
+  "ts": 0.6,
+  "t0": 0.12,
+  "tl": 8
+}

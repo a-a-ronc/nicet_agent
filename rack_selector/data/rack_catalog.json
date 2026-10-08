@@ -1,0 +1,104 @@
+{
+  "_meta": {
+    "description": "Rack component catalog for the nicet_agent OneRack-style selector. Beam capacities are per PAIR of beams, static load, including impact, per ANSI/RMI MH16.1. Frame capacities are per single upright frame, governed by max unsupported length (floor to top of lowest beam, or max beam spacing).",
+    "units": "inches for dimensions, pounds (lb) for capacities",
+    "dealer_priority": ["Interlake Mecalux", "SpaceRAK", "Hannibal/Nucor"],
+    "confidence_levels": {
+      "published": "Transcribed directly from the manufacturer's published load chart (cited).",
+      "representative": "Representative values anchored on published data points; CONFIRM against the manufacturer's current load tables before use."
+    },
+    "IMPORTANT": "This catalog is a triage aid. Final component selection, capacity, and seismic adequacy must be confirmed against the manufacturer's current published load tables and reviewed by a licensed PE."
+  },
+
+  "beams": [
+    {
+      "dealer": "Interlake Mecalux",
+      "family": "Teardrop step beam",
+      "confidence": "representative",
+      "source": "Anchored on Interlake published points (e.g. 96in x 2.75in 15ga ~2,440 lb/pair; ~108in ~5,380 lb). Confirm at https://www.interlakemecalux.com/beam-load-capacities",
+      "note": "Roll-formed teardrop, L/180 deflection, per RMI ANSI MH16.1. Capacities per pair.",
+      "models": [
+        {"id": "IK-350", "face_in": 3.5, "gauge": 16, "capacity_by_length_lb": {"96": 3300, "108": 2950, "120": 2600, "144": 2050}},
+        {"id": "IK-400", "face_in": 4.0, "gauge": 16, "capacity_by_length_lb": {"96": 4400, "108": 3950, "120": 3550, "144": 2850}},
+        {"id": "IK-450", "face_in": 4.5, "gauge": 16, "capacity_by_length_lb": {"96": 5400, "108": 4900, "120": 4400, "144": 3550}},
+        {"id": "IK-500", "face_in": 5.0, "gauge": 16, "capacity_by_length_lb": {"96": 6300, "108": 5750, "120": 5200, "144": 4250}},
+        {"id": "IK-600", "face_in": 6.0, "gauge": 14, "capacity_by_length_lb": {"96": 9500, "108": 8700, "120": 7800, "144": 6300}}
+      ]
+    },
+    {
+      "dealer": "SpaceRAK",
+      "family": "Roll-formed step beam",
+      "confidence": "published",
+      "source": "SpaceRAK Roll Formed Step Beams Capacity Chart (9/13/19), per ANSI MH16.1-2012. https://www.heartlandsteel.com/assets/images/pdfs/spacerak/SpaceRAK_RollFormedBeamsCapacityChart.pdf",
+      "note": "3in-4.625in = 3-pin/6in connectors; 5in-6.5in = 4-pin/8in connectors. Capacities per pair, include impact, L/180.",
+      "models": [
+        {"id": "306M", "face_in": 3.0,  "gauge": 16, "capacity_by_length_lb": {"48": 6437, "60": 5335, "72": 4601, "96": 3000, "108": 2390, "120": 1997, "144": 1473}},
+        {"id": "356M", "face_in": 3.5,  "gauge": 16, "capacity_by_length_lb": {"48": 7764, "60": 6387, "72": 5470, "96": 3861, "108": 3139, "120": 2611, "144": 1908}},
+        {"id": "376M", "face_in": 3.75, "gauge": 16, "capacity_by_length_lb": {"48": 8495, "60": 6968, "72": 5944, "96": 4409, "108": 3576, "120": 2967, "144": 2157}},
+        {"id": "416M", "face_in": 4.125,"gauge": 16, "capacity_by_length_lb": {"48": 9661, "60": 7885, "72": 6706, "96": 5220, "108": 4314, "120": 3571, "144": 2579}},
+        {"id": "466M", "face_in": 4.625,"gauge": 16, "capacity_by_length_lb": {"48": 11348,"60": 9227, "72": 7809, "96": 6037, "108": 5441, "120": 4517, "144": 3239}},
+        {"id": "506M", "face_in": 5.0,  "gauge": 16, "capacity_by_length_lb": {"48": 13060,"60": 10646,"72": 9042, "96": 7020, "108": 6344, "120": 5661, "144": 4121}},
+        {"id": "556M", "face_in": 5.5,  "gauge": 16, "capacity_by_length_lb": {"48": 14977,"60": 12164,"72": 10293,"96": 7948, "108": 7163, "120": 6380, "144": 4810}},
+        {"id": "604M", "face_in": 6.0,  "gauge": 14, "capacity_by_length_lb": {"48": 20951,"60": 16938,"72": 14266,"96": 10934,"108": 9815, "120": 8715, "144": 6588}},
+        {"id": "602M", "face_in": 6.0,  "gauge": 12, "capacity_by_length_lb": {"48": 28448,"60": 22949,"72": 19285,"96": 14696,"108": 13162,"120": 11707,"144": 8829}}
+      ]
+    },
+    {
+      "dealer": "Hannibal/Nucor",
+      "family": "Teardrop beam",
+      "confidence": "representative",
+      "source": "Anchored on Hannibal published points (120in x 5in ~5,333 lb/pair; 144in x 4.5in ~3,103 lb/pair). Confirm against Hannibal Industries current load tables.",
+      "note": "Hannibal Industries is a Nucor company. Roll-formed teardrop. Capacities per pair.",
+      "models": [
+        {"id": "HN-375", "face_in": 3.75, "gauge": 16, "capacity_by_length_lb": {"96": 4350, "108": 3550, "120": 2950, "144": 2150}},
+        {"id": "HN-450", "face_in": 4.5,  "gauge": 16, "capacity_by_length_lb": {"96": 5950, "108": 4850, "120": 4050, "144": 3103}},
+        {"id": "HN-500", "face_in": 5.0,  "gauge": 16, "capacity_by_length_lb": {"96": 7050, "108": 6350, "120": 5333, "144": 4100}},
+        {"id": "HN-600", "face_in": 6.0,  "gauge": 14, "capacity_by_length_lb": {"96": 10900, "108": 9800, "120": 8700, "144": 6600}}
+      ]
+    }
+  ],
+
+  "frames": [
+    {
+      "dealer": "Interlake Mecalux",
+      "family": "Roll-formed upright frame",
+      "confidence": "representative",
+      "source": "Representative roll-formed upright capacities; CONFIRM against Interlake frame load tables. Capacity governed by max unsupported length (floor to first beam / max beam spacing).",
+      "note": "Capacity per single frame. Default depths 42in / 48in.",
+      "depth_in": [42, 48],
+      "models": [
+        {"id": "IKF-3x16", "column": "3in 16ga", "capacity_by_unsupported_length_lb": {"48": 24000, "60": 24000, "72": 22000, "84": 18500, "96": 15500, "108": 13000, "120": 11000}},
+        {"id": "IKF-3x14", "column": "3in 14ga", "capacity_by_unsupported_length_lb": {"48": 30000, "60": 30000, "72": 28000, "84": 24000, "96": 20500, "108": 17500, "120": 15000}},
+        {"id": "IKF-4x14", "column": "4in 14ga", "capacity_by_unsupported_length_lb": {"48": 45000, "60": 45000, "72": 45000, "84": 41000, "96": 36000, "108": 31500, "120": 27500}},
+        {"id": "IKF-4x12", "column": "4in 12ga", "capacity_by_unsupported_length_lb": {"48": 56000, "60": 56000, "72": 56000, "84": 51000, "96": 45000, "108": 39500, "120": 35000}}
+      ]
+    },
+    {
+      "dealer": "SpaceRAK",
+      "family": "Structural channel frame",
+      "confidence": "published",
+      "source": "SpaceRAK Structural Channel Frames Capacity Chart (9/24/18), per 2002 RMI/AISI. https://heartlandsteel.com/assets/images/pdfs/spacerak/SpaceRAK_StructuralChannelFramesCapacityChart.pdf",
+      "note": "Capacity per single frame, by max unsupported length (floor to top of lowest beam, or max beam spacing). H:D ratio <= 6:1 for single-row.",
+      "depth_in": [36, 42, 48],
+      "models": [
+        {"id": "335B", "column": "3in 3.5lb/ft", "capacity_by_unsupported_length_lb": {"48": 34400, "60": 34400, "66": 33400, "72": 29400, "84": 22000, "96": 16900, "108": 13400, "120": 10900}},
+        {"id": "341B", "column": "3in 4.1lb/ft", "capacity_by_unsupported_length_lb": {"48": 38400, "60": 38400, "66": 35900, "72": 31400, "84": 23500, "96": 18000, "108": 14300, "120": 11600}},
+        {"id": "445B", "column": "4in 4.5lb/ft", "capacity_by_unsupported_length_lb": {"48": 51600, "60": 51600, "66": 51600, "72": 51600, "84": 46100, "96": 38400, "108": 31200, "120": 25300}},
+        {"id": "454B", "column": "4in 5.4lb/ft", "capacity_by_unsupported_length_lb": {"48": 57300, "60": 57300, "66": 57300, "72": 57300, "84": 49900, "96": 40900, "108": 32700, "120": 26600}}
+      ]
+    },
+    {
+      "dealer": "Hannibal/Nucor",
+      "family": "Roll-formed upright frame",
+      "confidence": "representative",
+      "source": "Representative roll-formed upright capacities; CONFIRM against Hannibal Industries current frame load tables.",
+      "note": "Hannibal Industries is a Nucor company. Capacity per single frame. Default depths 42in / 48in.",
+      "depth_in": [42, 48],
+      "models": [
+        {"id": "HNF-3x16", "column": "3in 16ga", "capacity_by_unsupported_length_lb": {"48": 25000, "60": 25000, "72": 23000, "84": 19000, "96": 16000, "108": 13500, "120": 11500}},
+        {"id": "HNF-3x14", "column": "3in 14ga", "capacity_by_unsupported_length_lb": {"48": 31000, "60": 31000, "72": 29000, "84": 25000, "96": 21000, "108": 18000, "120": 15500}},
+        {"id": "HNF-425x13", "column": "4.25in 13ga", "capacity_by_unsupported_length_lb": {"48": 48000, "60": 48000, "72": 48000, "84": 43000, "96": 38000, "108": 33000, "120": 29000}}
+      ]
+    }
+  ]
+}

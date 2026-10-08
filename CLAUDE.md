@@ -9,51 +9,58 @@ construction or a permit must still be reviewed by a licensed PE / fire protecti
 engineer (FPE).
 
 ## What this knowledge base covers
-- **NFPA 13 (2025)** — sprinkler design: commodity classification, storage
-  arrangements, CMDA / CMSA / ESFR, clearances, flue spaces, in-rack sprinklers.
+- **NFPA 13** — sprinkler design: commodity classification, storage arrangements,
+  CMDA / CMSA / ESFR (incl. the 45 ft ceiling-only limit and >45 ft options), clearances
+  (18 in. standard / 36 in. ESFR), flue spaces, open rack vs. solid shelving, in-rack.
 - **FM Global Property Loss Prevention Data Sheets** — DS 8-9 (storage), DS 8-1
   (commodity classification), DS 2-0 (sprinkler installation), DS 1-2 (earthquakes).
   Used when the insurer is FM Global (FM rules override NFPA on FM-insured sites).
-- **IBC 2024 / IFC 2024 (ICC)** — occupancy classification, allowable height/area,
-  construction type, and IFC Chapter 32 high-piled combustible storage.
-- **Structural / seismic** — ANSI/RMI MH16.1-2023 rack design, ASCE 7-22 seismic,
-  Seismic Design Categories. Anchored to **high-seismic US (CA / UT / WA)**.
+- **IBC / IFC (ICC)** — occupancy classification, allowable height/area, construction
+  type, and IFC Chapter 32 high-piled combustible storage.
+- **Structural / seismic** — ANSI/RMI MH16.1 rack design, ASCE 7 seismic, Seismic Design
+  Categories. Anchored to **high-seismic US (CA / UT / WA)**.
 
 ## Files
-- `knowledge_base/00_INDEX.md` — START HERE. Query router + decision guide.
-- `knowledge_base/nfpa13.md`
-- `knowledge_base/fm_global.md`
-- `knowledge_base/ibc_ifc.md`
-- `knowledge_base/seismic_rack_design.md`
+- `knowledge_base/00_INDEX.md` — START HERE. Query router + tools table.
+- `knowledge_base/nfpa13.md`, `fm_global.md`, `ibc_ifc.md`, `seismic_rack_design.md`
 - `knowledge_base/commodity_quick_reference.md` — cross-cutting cheat sheet.
 - `knowledge_base/adopted_codes_utah.md` — **GOVERNING adopted editions for Utah/SLC**.
+- `knowledge_base/adopted_codes_ca_wa.md` — California / Washington adopted editions.
+- `projects/*.json` — **project profiles** (one per job; `_TEMPLATE.json` for new ones).
+- `rack_selector/` — the tools (see below).
 
 ## Latest-published vs. locally-adopted editions (IMPORTANT)
 The KB content is written against the **latest published** standards (NFPA 13 2025,
 I-Codes 2024, ASCE 7-22, MH16.1-2023). **A permit is reviewed against the locally
 ADOPTED edition, which is older.** For **Utah / Salt Lake City**: design to **NFPA 13
-2019**, **IFC 2021**, **ASCE 7-16** (see `adopted_codes_utah.md`). When answering a
-project question, state the *adopted* edition for that jurisdiction, not just the latest.
-There is no "NFPA 21" — the sprinkler standard is NFPA 13.
+2019**, **IFC 2021**, **ASCE 7-16** (see `adopted_codes_utah.md`; machine table in
+`rack_selector/data/adopted_codes.json`). When answering a project question, state the
+*adopted* edition for that jurisdiction. There is no "NFPA 21" — the sprinkler
+standard is NFPA 13.
 
 ## How to answer a query
-1. **Read `00_INDEX.md` first** to route the question to the right file(s).
-2. Establish the governing authority: **Is the site FM Global-insured?** If yes,
+1. **Read `00_INDEX.md` first** to route the question.
+2. **Check `projects/` for a profile** for the job. Use its facts; when the user gives new
+   facts (heights, insurer, commodity, deck type…), **update the profile** and its
+   `open_questions` / `history`. For a new job, copy `_TEMPLATE.json`.
+3. Establish the governing authority: **Is the site FM Global-insured?** If yes,
    FM DS 8-9 governs fire protection. If not, NFPA 13 + the locally adopted IFC
    govern. IBC/IFC + ASCE 7 always govern building/structural/seismic.
-3. Collect the project inputs the answer depends on (see checklist below). If a
-   decisive input is missing, ask for it before giving a number.
-4. Give the answer with the **specific citation** (standard + edition + section/table).
-5. **Flag, don't guess.** Exact sprinkler densities, K-factors, pressures, and
-   allowable-area values come from tables that change by edition — when precision
-   matters, state the controlling table and that the value must be read from it /
-   confirmed by the FPE rather than recalling a number that may be stale.
+4. Collect the decisive inputs (checklist below). If one is missing, ask before giving
+   a number — or run the tool and report the result as UNRESOLVED with what's missing.
+5. For "do we need in-rack / how many levels / what rack" questions, **run the tools**
+   and quote their findings rather than reasoning from memory.
+6. Give the answer with the **specific citation** (standard + adopted edition + section).
+7. **Flag, don't guess.** Densities, K-factors, pressures, allowable areas, and
+   conventional in-rack level spacing come from tables/figures that change by edition —
+   name the table and say it must be read/confirmed by the FPE.
 
 ## Minimum project inputs for a fire-protection answer
 - Commodity class (I–IV, or Group A/B/C plastic; cartoned vs. exposed; encapsulated?)
-- Storage method (rack — single/double/multi-row; palletized; solid-pile; shelf)
-- Maximum storage height and building/ceiling height
-- Aisle width
+- Storage method (rack — single/double/multi-row; shelf/hand-stack; palletized; solid-pile)
+- Maximum storage height, ceiling height **and sprinkler deflector height**
+- Aisle width and rack depth
+- Decking type, open-area %, and whether flues will actually be maintained
 - Insurer (FM Global vs. NFPA/AHJ)
 - For seismic: site (state/ZIP), Seismic Design Category or site class if known
 
@@ -61,28 +68,36 @@ There is no "NFPA 21" — the sprinkler standard is NFPA 13.
 When sizing rack beam elevations / openings, add vertical load-handling clearance
 above each load: **6 in. where there are no in-rack sprinklers, 12 in. where in-rack
 sprinklers are present** (the extra room accommodates in-rack sprinkler piping and
-water distribution). This is separate from the NFPA 13 **18 in.** minimum clearance
-between the top of storage and **ceiling** sprinkler deflectors.
+water distribution). This is separate from the NFPA 13 deflector clearance to the top of
+storage: **18 in. standard spray, 36 in. ESFR/CMSA**.
 
 ## Guardrails
-- Always cite edition. Do not blend editions silently.
+- Always cite the adopted edition. Do not blend editions silently.
 - When NFPA and FM disagree, say so and identify which governs for that site.
-- Never present a recalled density/pressure as a substitute for reading the table.
+- Never present a recalled density/pressure/spacing as a substitute for reading the table.
+- If you discover an earlier answer or KB entry was wrong, say so plainly and fix the KB.
 - State the human-review requirement on anything that affects a permit or build.
 
-## Tools
-- `rack_selector/` — OneRack-style seismic rack-selection triage tool (BUILT). Resolves
-  a site (ZIP/address/lat-long), auto-fetches ASCE 7-22 seismic from USGS, computes Cs /
-  base shear per ANSI/RMI MH16.1-2023, lays out beam elevations with the 6"/12" clearance
-  convention, checks the NFPA 18" rule, and recommends frames/beams from the dealer
-  catalog (Interlake Mecalux > SpaceRAK > Hannibal/Nucor). Run:
-  `python -m rack_selector --zip <zip> --pallet-weight <lb> --pallet-height <in>
-  --beam-length <in> --levels <n> --clear-height <in> --commodity "Class IV"`.
-  Triage only — see `rack_selector/methodology.md`. Confirm vs. manufacturer seismic
-  tables + PE review. SpaceRAK catalog data is published; Interlake/Hannibal entries are
-  representative until their published tables are dropped into `data/rack_catalog.json`.
+## Tools (run from the repo root; `python -m pytest` runs the test suite)
+- `python -m rack_selector.fire_check` — **in-rack triage**: adopted editions, FM
+  override, IFC Ch. 32 trigger, row classification, open rack vs. solid shelving, ESFR
+  envelope + 36 in. clearance, specific-application listings above 45 ft, and in-rack
+  level planning (EC / ESFR in-rack "virtual floor"). Returns REQUIRED / LIKELY /
+  UNRESOLVED / POSSIBLY_AVOIDABLE with reasons. `--project projects/<job>.json`.
+- `python -m rack_selector.levels` — levels-that-fit matrix for a load height across beam
+  sizes × in-rack on/off, under a deflector (36/18 in.) or frame-height limit;
+  `--hole-pitch 2` snaps to teardrop holes.
+- `python -m rack_selector` — OneRack-style rack selector: site → USGS ASCE 7 seismic
+  (`--code-edition asce7-16` for UT/WA permits) → Cs/base shear (MH16.1) → elevations →
+  frame + beam pick by dealer priority (Interlake Mecalux > SpaceRAK > Hannibal/Nucor).
+  Pallet mode `--pallet-weight` or hand-stack mode `--shelf-load` (lb/level/bay).
+- Catalog (`rack_selector/data/rack_catalog.json`): **Interlake Mecalux and SpaceRAK are
+  published tables; Hannibal/Nucor is representative** (no public chart found). Gravity
+  tables only — seismic adequacy needs the manufacturer's seismic calc + PE.
+- Triage only — see `rack_selector/methodology.md`.
 
 ## Roadmap (future)
-- Upgrade Interlake Mecalux & Hannibal/Nucor catalog entries to published load tables.
-- Add anchor/base-plate + overstrength checks, double-deep / push-back / drive-in,
-  and a sprinkler-density lookup.
+- Hannibal/Nucor published load tables (request from Hannibal/Nucor rep).
+- Anchor/base-plate + overstrength checks; double-deep / push-back / drive-in.
+- Sprinkler-density lookup by adopted edition (needs licensed table data).
+- More jurisdictions in `adopted_codes.json` (verify CA/WA NFPA 13 editions).

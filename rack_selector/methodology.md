@@ -43,14 +43,19 @@ top_of_storage = top beam + pallet_height
 ```
 - `first_beam_top` defaults to one full pitch above the slab when the bottom level is
   floor-supported (`floor_level = True`).
-- **NFPA 13 check:** `top_of_storage + 18 in. <= building_clear_height` (the 18 in.
-  top-of-storage-to-**ceiling-deflector** minimum; clear height approximates the deflector
-  elevation). The 6/12 in. value is a **rack-design** clearance, separate from this.
+- **NFPA 13 check:** `top_of_storage + C <= deflector height`, where **C = 18 in.**
+  (standard spray) or **36 in.** (ESFR/CMSA, `--ceiling-sprinkler esfr`; NFPA 13 §14.2.12
+  in 2019+). `--clear-height` should be the **deflector** elevation. The 6/12 in. value is a
+  **rack-design** clearance, separate from this.
+- `--hole-pitch 2` rounds the pitch (and first beam) up to the upright hole pattern.
 
 ## 5. Component selection (triage)
-- **Required beam-pair capacity** = `pallets_per_bay × pallet_weight`. Beam capacities are
-  per pair and already include impact (per RMI tables).
-- **Required frame axial** = `pallets_per_bay × pallet_weight × beam_levels`. An interior
+- **Level load** = `pallets_per_bay × pallet_weight` (pallet mode) or `shelf_load`
+  (hand-stack mode: total uniformly distributed load per level per bay — cartons + deck).
+  Hand-stack mode also flags that the deck/shelf capacity must be checked separately.
+- **Required beam-pair capacity** = level load. Beam capacities are per pair (SpaceRAK
+  includes impact; Interlake tables are static UDL incl. 2% dead load).
+- **Required frame axial** = `level load × beam_levels`. An interior
   upright frame carries one full bay per beam level (two adjacent half-bays). The
   floor-supported level loads the slab, not the frame, so it is excluded from frame axial.
 - **Conservative lookups:** when the requested beam length or frame unsupported length
@@ -71,11 +76,34 @@ top_of_storage = top beam + pallet_height
   check is required.
 - Assumes **single-deep selective** rack. Double-deep, push-back, drive-in, pallet-flow,
   and cantilever are out of scope.
-- Fire-protection output is an **advisory** pointing to NFPA 13 / FM DS 8-9; it does not
-  size sprinklers, set densities, or place in-rack levels.
+- The selector's fire note is a one-line advisory; the structured triage lives in
+  `fire_check` (section 7). Neither sizes sprinklers or sets densities.
 - Representative (non-published) catalog capacities are estimates — every recommendation
   that uses one says so.
 
-## 7. Standards referenced
+## 7. fire_check logic (in-rack triage)
+1. **Editions** from `data/adopted_codes.json` by jurisdiction; FM insurer → FM DS 8-9
+   governs (NFPA findings become a cross-check); unknown insurer → warning.
+2. **IFC Ch. 32:** top of storage > 12 ft → high-piled. Group A plastics (high-hazard) >
+   6 ft only *when required by the fire code official*. Class IV is not high-hazard.
+3. **Row type:** aisle < 3.5 ft → multiple-row; else depth ≤ 6 ft single, ≤ 12 ft double,
+   > 12 ft multiple.
+4. **Open rack** if no shelving; shelf ≤ 20 ft²; or wire/slatted deck ≥ 50 % open with
+   flues maintained. Loads blocking flues, or solid decks > 20 ft² → **solid shelving →
+   in-rack REQUIRED** at each tier. Unknown deck % → **UNRESOLVED**.
+5. **Ceiling-only ESFR** (NFPA table, K-25.2): Class I–IV & CUP ≤ 40 ft storage / ≤ 45 ft
+   ceiling; EEP ≤ 35/40 ft; deflector clearance ≥ 36 in.; not multiple-row. Deflector
+   defaults to ceiling − 1 ft (flagged).
+6. **Specific-application listings** checked against commodity, row type, storage,
+   ceiling, aisle and open-rack status: Reliable P25 (≤ 40/48 ft, aisles ≥ 5 ft), Viking
+   VK514 (≤ 48 ft ceiling, verify), FM K28 (FM sites only, ≤ 50/55 ft, aisles ≥ 8 ft).
+7. **Status:** REQUIRED (solid shelving) → POSSIBLY_AVOIDABLE (inside NFPA envelope, or a
+   compatible listing) → UNRESOLVED (deck unknown) → LIKELY (otherwise).
+8. **In-rack planning** (when beam elevations are known): EC in-rack (30 ft / 20 ft
+   uncartoned) and ESFR in-rack (40 ft / 30 ft) with a **virtual floor** requirement
+   `max(ceiling − 45, storage − 40, 0)`; the top in-rack level must reach it with gaps ≤
+   the spacing. Conventional QR spacing only if the user supplies it from the Ch. 25 figure.
+
+## 8. Standards referenced
 ASCE/SEI 7-22 · ANSI/RMI MH16.1-2023 · NFPA 13 (2025) · IFC 2024 Ch. 32 · FM Global
 DS 8-9. See the `knowledge_base/` files for the fire-protection and code basis.

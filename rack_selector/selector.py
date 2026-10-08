@@ -22,10 +22,12 @@ from .catalog import Catalog, BeamOption, FrameOption
 from .clearance import beam_layout, BeamLayout
 from .seismic import SeismicResult, seismic_weight, base_shear, sdc_requirements
 
-# Rough ESFR ceiling-only envelope for the in-rack advisory (see knowledge_base/nfpa13.md).
-ESFR_MAX_STORAGE_FT = 35.0
-ESFR_MAX_CEILING_FT = 40.0
-HIGH_HAZARD_CLASSES = {"IV", "CLASS IV", "GROUP A", "A PLASTIC", "PLASTIC"}
+# Quick ESFR ceiling-only envelope for the in-rack advisory (NFPA 13 Ch. 23 K-25.2 rows for
+# Class I-IV / cartoned unexpanded plastic). For the full triage run rack_selector.fire_check.
+ESFR_MAX_STORAGE_FT = 40.0
+ESFR_MAX_CEILING_FT = 45.0
+# Plastics-heavy commodities (IFC "high-hazard" = Group A plastics; Class IV is NOT high-hazard).
+HIGH_HAZARD_CLASSES = {"GROUP A", "A PLASTIC", "PLASTIC", "CUP", "CEP", "EUP", "EEP"}
 DEFAULT_DEAD_LOAD_FRACTION = 0.05  # rack steel as fraction of product load (estimate)
 
 
@@ -103,17 +105,31 @@ def _fire_advisory(commodity_class: str, storage_ft: float, ceiling_ft: Optional
             "clearance). Confirm the ESFR listing for this commodity/height with the FPE.")
 
 
-def recommend(seismic: SeismicResult, *, pallet_weight_lb: float, pallet_height_in: float,
-              beam_length_in: float, num_beam_levels: int, pallets_per_bay: int = 2,
+def recommend(seismic: SeismicResult, *, pallet_height_in: float,
+              beam_length_in: float, num_beam_levels: int,
+              pallet_weight_lb: Optional[float] = None, pallets_per_bay: int = 2,
+              shelf_load_lb: Optional[float] = None,
               in_rack_sprinklers: bool = False, floor_level: bool = True,
               building_clear_height_in: Optional[float] = None,
               commodity_class: str = "", dead_load_fraction: float = DEFAULT_DEAD_LOAD_FRACTION,
+              ceiling_sprinkler: str = "standard", hole_pitch_in: Optional[float] = None,
               catalog: Optional[Catalog] = None) -> RackRecommendation:
+    """
+    Pallet mode: pallet_weight_lb x pallets_per_bay per level.
+    Hand-stack mode: shelf_load_lb = total uniformly distributed load per level per bay
+    (cartons + deck). pallet_height_in is the load/case height in either mode.
+    """
     cat = catalog or Catalog()
     flags: list[str] = []
+    if shelf_load_lb is None and pallet_weight_lb is None:
+        raise ValueError("Provide pallet_weight_lb (pallet mode) or shelf_load_lb (hand-stack)")
+    level_load = shelf_load_lb if shelf_load_lb is not None else pallets_per_bay * pallet_weight_lb
+    if shelf_load_lb is not None:
+        flags.append("Hand-stack mode: confirm the wire deck / shelf capacity also carries "
+                     f"{shelf_load_lb:,.0f} lb per level (deck capacity is separate from beams).")
 
     # --- beam demand & selection ---
-    required_pair = pallets_per_bay * pallet_weight_lb
+    required_pair = level_load
     beam_best = cat.best_beam_per_dealer(beam_length_in, required_pair)
     beam_ordered = cat.order_by_priority(beam_best)
     rec_beam = beam_ordered[0] if beam_ordered else None
@@ -128,16 +144,23 @@ def recommend(seismic: SeismicResult, *, pallet_weight_lb: float, pallet_height_
             flags.append(
                 f"Recommended beam ({rec_beam.dealer} {rec_beam.model_id}) capacity is "
                 "REPRESENTATIVE — confirm against the dealer's published load table.")
+        if rec_beam.lateral_bracing_over_in and beam_length_in > rec_beam.lateral_bracing_over_in:
+            flags.append(f"{rec_beam.dealer} beams over {rec_beam.lateral_bracing_over_in:.0f} in "
+                         "require lateral bracing per the manufacturer's tables.")
+        if rec_beam.deck_tie_over_in and beam_length_in > rec_beam.deck_tie_over_in:
+            flags.append(f"Beams over {rec_beam.deck_tie_over_in:.0f} in that support decking must "
+                         "be tied together (crossbar) to prevent spreading.")
 
     # --- elevation layout ---
     layout = beam_layout(
         pallet_height_in=pallet_height_in, beam_height_in=beam_height,
         num_beam_levels=num_beam_levels, in_rack_sprinklers=in_rack_sprinklers,
-        floor_level=floor_level, building_clear_height_in=building_clear_height_in)
+        floor_level=floor_level, building_clear_height_in=building_clear_height_in,
+        ceiling_sprinkler=ceiling_sprinkler, hole_pitch_in=hole_pitch_in)
     flags.extend(layout.flags)
 
     # --- frame demand & selection ---
-    required_frame = pallets_per_bay * pallet_weight_lb * num_beam_levels
+    required_frame = level_load * num_beam_levels
     frame_best = cat.best_frame_per_dealer(
         layout.max_beam_spacing_in, required_frame, layout.required_frame_height_in)
     frame_ordered = cat.order_by_priority(frame_best)
@@ -159,7 +182,7 @@ def recommend(seismic: SeismicResult, *, pallet_weight_lb: float, pallet_height_
 
     # --- seismic magnitude (per bay) ---
     storage_levels = layout.storage_levels
-    product_load = pallets_per_bay * pallet_weight_lb * storage_levels
+    product_load = level_load * storage_levels
     dead_load = dead_load_fraction * product_load
     ws = seismic_weight(dead_load, product_load)
     v_down = base_shear(seismic.cs_down_aisle or 0.0, ws)
@@ -207,8 +230,8 @@ def render_report(rec: RackRecommendation) -> str:
              f"{lay.required_frame_height_in:.0f} in")
     if lay.building_clear_height_in:
         ok = "OK" if lay.nfpa_ok else "FAIL"
-        L.append(f"  NFPA 18 in. to deflector vs clear height "
-                 f"{lay.building_clear_height_in:.0f} in: {ok}")
+        L.append(f"  NFPA {lay.deflector_clearance_in:.0f} in. top-of-storage-to-deflector "
+                 f"check vs {lay.building_clear_height_in:.0f} in: {ok}")
     L.append("")
     L.append("DEMAND")
     L.append(f"  Required beam capacity: {rec.required_beam_pair_lb:,.0f} lb/pair "
@@ -223,7 +246,8 @@ def render_report(rec: RackRecommendation) -> str:
     if rec.recommended_beam:
         b = rec.recommended_beam
         util = rec.required_beam_pair_lb / b.capacity_pair_lb * 100
-        L.append(f"  BEAM : {b.dealer} {b.model_id}  {b.face_in}\" face {b.gauge}ga  "
+        ga = f" {b.gauge}ga" if b.gauge else ""
+        L.append(f"  BEAM : {b.dealer} {b.model_id}  {b.face_in}\" face{ga}  "
                  f"@ {b.length_in:.0f}\"  cap {b.capacity_pair_lb:,.0f} lb/pair  "
                  f"(util {util:.0f}%, {b.confidence})")
     else:

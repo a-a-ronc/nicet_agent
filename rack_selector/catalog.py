@@ -27,6 +27,8 @@ class BeamOption:
     capacity_pair_lb: float
     confidence: str
     source: str
+    lateral_bracing_over_in: Optional[float] = None
+    deck_tie_over_in: Optional[float] = None
 
 
 @dataclass
@@ -89,6 +91,8 @@ class Catalog:
                         face_in=m["face_in"], gauge=m["gauge"], length_in=length_in,
                         capacity_pair_lb=cap, confidence=fam["confidence"],
                         source=fam["source"],
+                        lateral_bracing_over_in=fam.get("lateral_bracing_over_in"),
+                        deck_tie_over_in=fam.get("deck_tie_over_in"),
                     ))
         return out
 

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "description": "Locally ADOPTED code editions by jurisdiction. A permit is reviewed against these, not the latest published editions. 'verify' notes mark values that could not be confirmed from a primary source. Re-check before each project: states re-adopt on ~3-year cycles.",
+    "last_reviewed": "2026-10-08"
+  },
+  "DEFAULT": {
+    "name": "No jurisdiction set — latest published editions (reference only)",
+    "nfpa13": "2025",
+    "ifc": "2024",
+    "ibc": "2024",
+    "asce7": "7-22",
+    "status": "reference",
+    "notes": ["Set a jurisdiction to get the edition a permit is actually reviewed against."],
+    "sources": []
+  },
+  "UT": {
+    "name": "Utah (statewide; Salt Lake City follows state adoption)",
+    "effective": "2023-07-01",
+    "nfpa13": "2019",
+    "ifc": "2021",
+    "ibc": "2018",
+    "asce7": "7-16",
+    "status": "confirmed",
+    "notes": [
+      "NFPA 13/13R/13D/20 = 2019, NFPA 24 = 2019, NFPA 25 = 2020, NFPA 72 = 2019 per State Fire Marshal code list.",
+      "IBC listed as 2018 by the State Fire Marshal; some secondary sources cite 2021 — confirm on design documents per Utah Code 15A-2-103. Either way ASCE 7-16 governs seismic.",
+      "SLC applies codes in effect on the date the plan submission is accepted (SLC Code 18.20.050)."
+    ],
+    "sources": [
+      "https://firemarshal.utah.gov/applications-and-forms/current-code-books/",
+      "https://www.slc.gov/buildingservices/current-building-codes/"
+    ]
+  },
+  "CA": {
+    "name": "California (2025 Title 24 — CBC/CFC)",
+    "effective": "2026-01-01",
+    "nfpa13": "2022",
+    "ifc": "2024",
+    "ibc": "2024",
+    "asce7": "7-22",
+    "status": "partially verified",
+    "notes": [
+      "2025 California Fire Code (Title 24 Part 9) is based on the 2024 IFC, effective Jan 1, 2026.",
+      "NFPA 13 edition: 2022 per the CFC referenced-standards table (California amended) — VERIFY against CFC Chapter 80 and local ordinance; California historically lags NFPA editions.",
+      "Projects permitted under the prior 2022 CFC (2021 IFC basis) remain on that edition."
+    ],
+    "sources": [
+      "https://gocodebook.com/library/us/ca/ca-fire-code/chapter-80-referenced-standards/section-j102-referenced-standards"
+    ]
+  },
+  "WA": {
+    "name": "Washington (State Building Code Council)",
+    "effective": "2024-03-15",
+    "nfpa13": "2019",
+    "ifc": "2021",
+    "ibc": "2021",
+    "asce7": "7-16",
+    "status": "partially verified",
+    "notes": [
+      "2021 IBC/IFC (WAC 51-50 / 51-54A) effective March 15, 2024.",
+      "NFPA 13 edition inferred as 2019 from the 2021 IFC referenced standards — VERIFY against WAC 51-54A amendments.",
+      "2024 I-Code adoption was estimated for Nov 1, 2026 — check current SBCC status before relying on 2021 editions."
+    ],
+    "sources": [
+      "https://sbcc.wa.gov/node/60",
+      "https://lawfilesext.leg.wa.gov/law/wsr/2023/20/23-20-027.htm"
+    ]
+  }
+}

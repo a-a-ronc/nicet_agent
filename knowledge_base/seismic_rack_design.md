@@ -83,11 +83,23 @@ overall storage height is within the chosen sprinkler scheme's listing.
 
 ---
 
-## 7. Roadmap — OneRack-style tool (not yet built)
-Goal: given commodity + configuration + site, compute seismic demand (ASCE 7-22 →
-MH16.1-2023) and recommend a rack type/section, applying the 6"/12" clearance
-convention and respecting NFPA 13 / FM flue + clearance rules. Tracked for a later
-phase; current phase is reference Q&A only.
+## 7. Tools (built) — see `rack_selector/README.md`
+- `python -m rack_selector` — site → ASCE 7 seismic (use `--code-edition asce7-16` for
+  Utah/WA permits) → Cs/base shear → beam elevations (6/12 in.) → frame + beam pick by
+  dealer priority. Pallet mode (`--pallet-weight`) or hand-stack mode (`--shelf-load`).
+- `python -m rack_selector.levels` — levels-that-fit matrix (beam size × in-rack).
+- `python -m rack_selector.fire_check` — in-rack triage.
+
+## 8. Dealer handling clearances (for comparison)
+Interlake Mecalux's own selective-rack tables size level pitch as **pallet height + 4 in.
++ beam height, rounded up to the next 2 in.**, with **≥ 8 in.** from the forks to the top
+beam. Intralog's convention (**+6 in.**, **+12 in.** with in-rack) is more conservative and
+governs our layouts; use `--hole-pitch 2` to snap pitches to the 2 in. teardrop hole
+pattern. Source: Interlake Mecalux Selective Pallet Rack Calculation Tables U02 (2014).
+
+## 9. Adopted seismic standard
+Seismic design loads follow the **adopted** IBC: IBC 2018/2021 → **ASCE 7-16** (Utah, WA
+today); IBC 2024 → ASCE 7-22 (California 2025 CBC). See `adopted_codes_*.md`.
 
 ## Sources
 - [ANSI MH16.1-2023 overview — Apex](https://www.apexwarehousesystems.com/ansi-updates-steel-pallet-racking-standards-apex-answers-your-questions/)

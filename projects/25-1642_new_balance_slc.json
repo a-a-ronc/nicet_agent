@@ -1,0 +1,72 @@
+{
+  "project_id": "25-1642",
+  "name": "New Balance SLC — hand-stack pick racking (copy of Ontario, CA schema)",
+  "client": "New Balance",
+  "drawing": "25-1642-R02RE Rev C 'VNA Racking Plan View' (FOR PERMIT 6/15/2026)",
+  "site": {
+    "address": "2335 W 2950 N Suite 1, Salt Lake City, UT 84116",
+    "zip": "84116",
+    "lat": 40.8254,
+    "lon": -111.9547,
+    "jurisdiction": "UT",
+    "risk_category": "II",
+    "site_class": "Default",
+    "code_edition": "asce7-16"
+  },
+  "building": {
+    "ceiling_height_ft": 50.0,
+    "ceiling_height_confirmed": false,
+    "deflector_height_ft": null,
+    "notes": "806,000 sf New Balance DC (opened Oct 2025) within a ~1.14M sf development. ~50 ft clear is the team's estimate; no public spec found."
+  },
+  "insurer": "UNKNOWN",
+  "fire": {
+    "commodity": "Class IV",
+    "commodity_confirmed": false,
+    "commodity_note": "Cartoned athletic footwear (NBAS cases). EVA/rubber/synthetic content may push to cartoned unexpanded Group A plastic (CUP).",
+    "storage_method": "shelf",
+    "storage_height_ft": 29.0,
+    "storage_height_note": "Estimate: ~26'-6\" top beam + 31.5\" case. Confirm from revised elevations.",
+    "aisle_width_ft": 5.83,
+    "aisle_note": "Alternating 5'-10\" and 6'-0\" aisles; 5'-10\" governs.",
+    "rack_depth_ft": null,
+    "row_type": "single",
+    "shelving": "wire",
+    "deck_open_pct": null,
+    "flues_maintained": true,
+    "flues_note": "Design intent: upright | 3\" | case | 6\" | case | 3\" | upright. Hand-stack operations must actually hold these.",
+    "shelf_area_ft2": null,
+    "encapsulated": false,
+    "beam_elevations_in": null
+  },
+  "rack": {
+    "load_height_in": 31.5,
+    "load_height_note": "800 mm cases",
+    "load_weight_lb": null,
+    "shelf_load_lb": null,
+    "beam_length_in": 144,
+    "beam_options_in": [3.5, 5.0],
+    "in_rack_sprinklers": null,
+    "schema": "Single-row hand-stack runs tied across the 5'-10\" aisle with cross-aisle tie beams (as built at Ontario, CA).",
+    "drawn_configs": [
+      {"name": "A", "pitch_in": 39, "beam_in": 5.0, "overall": "26'-6\""},
+      {"name": "B", "pitch_in": 36, "beam_in": "3.5 upper / 5.0 lower", "overall": "27'-6\""},
+      {"name": "C", "pitch_in": 36, "beam_in": 3.5, "notes": "3'-6\" bottom opening"}
+    ],
+    "notes": "As drawn, clear openings (~31-34 in.) do not fit a 31.5 in. case + 6/12 in. clearance; pitches must open up."
+  },
+  "open_questions": [
+    "Confirmed ceiling and sprinkler DEFLECTOR height (drives ESFR 45 ft ceiling limit and 36 in. clearance).",
+    "Insurer — FM Global? (FM DS 8-9 would govern.)",
+    "Commodity classification of the footwear cases (Class IV vs cartoned Group A).",
+    "Wire deck open-area % and whether hand-stackers will hold the 3/6/3 in. flues.",
+    "Shelf load per level per bay (lb) for beam/frame selection.",
+    "How the Ontario, CA building was classified and protected, and what its AHJ/insurer accepted."
+  ],
+  "history": [
+    "2026-10: Utah adopted editions confirmed (NFPA 13 2019, IFC 2021, ASCE 7-16).",
+    "2026-10: Cross-aisle ties + 5'-10\"/6'-0\" aisles do not by themselves force in-rack; solid-shelf status and ceiling height do.",
+    "2026-10: NFPA 13 ceiling-only ESFR is limited to a 45 ft ceiling (Class I-IV/CUP). At ~50 ft, specific-application listings (P25/VK514, 48 ft) don't reach and FM K28 needs 8 ft aisles -> in-rack likely. With open decks, EC/ESFR in-rack needs one level >= 5 ft up as a 'virtual floor' (fire_check). If the deflector is <= 45-48 ft, ceiling-only may work.",
+    "2026-10: ESFR deflector-to-storage clearance is 36 in. (not 18 in.)."
+  ]
+}

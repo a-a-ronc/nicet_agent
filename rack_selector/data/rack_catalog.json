@@ -1,28 +1,33 @@
 {
   "_meta": {
-    "description": "Rack component catalog for the nicet_agent OneRack-style selector. Beam capacities are per PAIR of beams, static load, including impact, per ANSI/RMI MH16.1. Frame capacities are per single upright frame, governed by max unsupported length (floor to top of lowest beam, or max beam spacing).",
+    "description": "Rack component catalog for the nicet_agent OneRack-style selector. Beam capacities are per PAIR of beams, static, uniformly distributed, per ANSI/RMI MH16.1. Frame capacities are per single upright frame, governed by max unsupported length (floor to top of first beam, or max beam spacing, whichever is greater).",
     "units": "inches for dimensions, pounds (lb) for capacities",
     "dealer_priority": ["Interlake Mecalux", "SpaceRAK", "Hannibal/Nucor"],
     "confidence_levels": {
       "published": "Transcribed directly from the manufacturer's published load chart (cited).",
       "representative": "Representative values anchored on published data points; CONFIRM against the manufacturer's current load tables before use."
     },
-    "IMPORTANT": "This catalog is a triage aid. Final component selection, capacity, and seismic adequacy must be confirmed against the manufacturer's current published load tables and reviewed by a licensed PE."
+    "IMPORTANT": "This catalog is a triage aid. Gravity load tables only. Final component selection, capacity, and seismic adequacy must be confirmed against the manufacturer's current tables / seismic calcs and reviewed by a licensed PE."
   },
 
   "beams": [
     {
       "dealer": "Interlake Mecalux",
-      "family": "Teardrop step beam",
-      "confidence": "representative",
-      "source": "Anchored on Interlake published points (e.g. 96in x 2.75in 15ga ~2,440 lb/pair; ~108in ~5,380 lb). Confirm at https://www.interlakemecalux.com/beam-load-capacities",
-      "note": "Roll-formed teardrop, L/180 deflection, per RMI ANSI MH16.1. Capacities per pair.",
+      "family": "Step beam (tab endplate)",
+      "confidence": "published",
+      "source": "Interlake Mecalux Selective Pallet Rack Calculation Tables U02, Ed./Rev. 15/4 (Nov 2014), p.6 'Beam capacity per pair', per ANSI MH16.1-2012 / 2007 AISI. https://www.steinservicesupply.com/wp-content/uploads/2018/10/Load-Tables_Capacity-Charts_Selective.pdf",
+      "note": "Capacity per pair = lesser of bending strength or L/180 deflection; includes product + dead load (2%); uniformly distributed, static. Beams over 126in require lateral bracing. Beams over 90in supporting decking must be tied (IK025B crossbar).",
+      "lateral_bracing_over_in": 126,
+      "deck_tie_over_in": 90,
       "models": [
-        {"id": "IK-350", "face_in": 3.5, "gauge": 16, "capacity_by_length_lb": {"96": 3300, "108": 2950, "120": 2600, "144": 2050}},
-        {"id": "IK-400", "face_in": 4.0, "gauge": 16, "capacity_by_length_lb": {"96": 4400, "108": 3950, "120": 3550, "144": 2850}},
-        {"id": "IK-450", "face_in": 4.5, "gauge": 16, "capacity_by_length_lb": {"96": 5400, "108": 4900, "120": 4400, "144": 3550}},
-        {"id": "IK-500", "face_in": 5.0, "gauge": 16, "capacity_by_length_lb": {"96": 6300, "108": 5750, "120": 5200, "144": 4250}},
-        {"id": "IK-600", "face_in": 6.0, "gauge": 14, "capacity_by_length_lb": {"96": 9500, "108": 8700, "120": 7800, "144": 6300}}
+        {"id": "27E", "face_in": 2.75,  "gauge": 16,   "capacity_by_length_lb": {"48": 5723,  "54": 5151,  "60": 4694,  "66": 4317,  "72": 3950,  "78": 3411,  "84": 2982,  "90": 2633,  "96": 2344,  "102": 2101,  "108": 1898,  "114": 1724,  "120": 1575,  "126": 1444,  "132": 1330,  "138": 1230,  "144": 1142,  "150": 1065, "156": 994,  "162": 931,  "168": 875}},
+        {"id": "36E", "face_in": 3.656, "gauge": null, "capacity_by_length_lb": {"48": 8396,  "54": 7519,  "60": 6811,  "66": 6232,  "72": 5750,  "78": 5342,  "84": 4994,  "90": 4692,  "96": 4162,  "102": 3717,  "108": 3338,  "114": 3021,  "120": 2745,  "126": 2508,  "132": 2302,  "138": 2121,  "144": 2000,  "150": 1819, "156": 1694, "162": 1581, "168": 1481}},
+        {"id": "40E", "face_in": 4.0,   "gauge": null, "capacity_by_length_lb": {"48": 9800,  "54": 8787,  "60": 7969,  "66": 7308,  "72": 6751,  "78": 6281,  "84": 5878,  "90": 5524,  "96": 5220,  "102": 4790,  "108": 4308,  "114": 3899,  "120": 3554,  "126": 3247,  "132": 2984,  "138": 2754,  "144": 2549,  "150": 2370, "156": 2208, "162": 2063, "168": 1934}},
+        {"id": "45E", "face_in": 4.5,   "gauge": null, "capacity_by_length_lb": {"48": 11607, "54": 10383, "60": 9405,  "66": 8605,  "72": 7931,  "78": 7368,  "84": 6887,  "90": 6463,  "96": 6093,  "102": 5773,  "108": 5483,  "114": 5014,  "120": 4557,  "126": 4157,  "132": 3815,  "138": 3515,  "144": 3248,  "150": 3015, "156": 2804, "162": 2616, "168": 2451}},
+        {"id": "50E", "face_in": 5.0,   "gauge": null, "capacity_by_length_lb": {"48": 13799, "54": 12358, "60": 11194, "66": 10243, "72": 9461,  "78": 8791,  "84": 8217,  "90": 7721,  "96": 7279,  "102": 6897,  "108": 6551,  "114": 6249,  "120": 5814,  "126": 5386,  "132": 5005,  "138": 4657,  "144": 4308,  "150": 4000, "156": 3725, "162": 3476, "168": 3257}},
+        {"id": "59E", "face_in": 5.928, "gauge": null, "capacity_by_length_lb": {"48": 16235, "54": 14506, "60": 13110, "66": 11982, "72": 11030, "78": 10235, "84": 9545,  "90": 8947,  "96": 8424,  "102": 7963,  "108": 7553,  "114": 7187,  "120": 6678,  "126": 6178,  "132": 5732,  "138": 5336,  "144": 5000,  "150": 4654, "156": 4367, "162": 4100, "168": 3861}},
+        {"id": "65E", "face_in": 6.54,  "gauge": null, "capacity_by_length_lb": {"48": 20760, "54": 18511, "60": 16729, "66": 15272, "72": 14043, "78": 13017, "84": 12126, "90": 11353, "96": 10689, "102": 10092, "108": 9562,  "114": 9098,  "120": 8444,  "126": 7802,  "132": 7232,  "138": 6723,  "144": 6277,  "150": 5863, "156": 5495, "162": 5159, "168": 4851}},
+        {"id": "65Q", "face_in": 6.54,  "gauge": 14,   "capacity_by_length_lb": {"48": 27765, "54": 24730, "60": 22326, "66": 20359, "72": 18721, "78": 17335, "84": 16130, "90": 15102, "96": 14202, "102": 13395, "108": 12691, "114": 12048, "120": 11223, "126": 10415, "132": 9681,  "138": 9033,  "144": 8442,  "150": 7908, "156": 7422, "162": 6976, "168": 6574}}
       ]
     },
     {
@@ -30,29 +35,30 @@
       "family": "Roll-formed step beam",
       "confidence": "published",
       "source": "SpaceRAK Roll Formed Step Beams Capacity Chart (9/13/19), per ANSI MH16.1-2012. https://www.heartlandsteel.com/assets/images/pdfs/spacerak/SpaceRAK_RollFormedBeamsCapacityChart.pdf",
-      "note": "3in-4.625in = 3-pin/6in connectors; 5in-6.5in = 4-pin/8in connectors. Capacities per pair, include impact, L/180.",
+      "note": "3in-4.625in = 3-pin/6in connectors; 5in-6.5in = 4-pin/8in connectors. Capacities per pair, include impact, L/180. Beams over 108in supporting decks should be tied. Valid only with SpaceRAK frames.",
+      "deck_tie_over_in": 108,
       "models": [
-        {"id": "306M", "face_in": 3.0,  "gauge": 16, "capacity_by_length_lb": {"48": 6437, "60": 5335, "72": 4601, "96": 3000, "108": 2390, "120": 1997, "144": 1473}},
-        {"id": "356M", "face_in": 3.5,  "gauge": 16, "capacity_by_length_lb": {"48": 7764, "60": 6387, "72": 5470, "96": 3861, "108": 3139, "120": 2611, "144": 1908}},
-        {"id": "376M", "face_in": 3.75, "gauge": 16, "capacity_by_length_lb": {"48": 8495, "60": 6968, "72": 5944, "96": 4409, "108": 3576, "120": 2967, "144": 2157}},
-        {"id": "416M", "face_in": 4.125,"gauge": 16, "capacity_by_length_lb": {"48": 9661, "60": 7885, "72": 6706, "96": 5220, "108": 4314, "120": 3571, "144": 2579}},
-        {"id": "466M", "face_in": 4.625,"gauge": 16, "capacity_by_length_lb": {"48": 11348,"60": 9227, "72": 7809, "96": 6037, "108": 5441, "120": 4517, "144": 3239}},
-        {"id": "506M", "face_in": 5.0,  "gauge": 16, "capacity_by_length_lb": {"48": 13060,"60": 10646,"72": 9042, "96": 7020, "108": 6344, "120": 5661, "144": 4121}},
-        {"id": "556M", "face_in": 5.5,  "gauge": 16, "capacity_by_length_lb": {"48": 14977,"60": 12164,"72": 10293,"96": 7948, "108": 7163, "120": 6380, "144": 4810}},
-        {"id": "604M", "face_in": 6.0,  "gauge": 14, "capacity_by_length_lb": {"48": 20951,"60": 16938,"72": 14266,"96": 10934,"108": 9815, "120": 8715, "144": 6588}},
-        {"id": "602M", "face_in": 6.0,  "gauge": 12, "capacity_by_length_lb": {"48": 28448,"60": 22949,"72": 19285,"96": 14696,"108": 13162,"120": 11707,"144": 8829}}
+        {"id": "306M", "face_in": 3.0,   "gauge": 16, "capacity_by_length_lb": {"48": 6437,  "60": 5335,  "72": 4601,  "84": 3676,  "96": 3000,  "108": 2390,  "120": 1997,  "132": 1701,  "144": 1473,  "156": 1289}},
+        {"id": "356M", "face_in": 3.5,   "gauge": 16, "capacity_by_length_lb": {"48": 7764,  "60": 6387,  "72": 5470,  "84": 4805,  "96": 3861,  "108": 3139,  "120": 2611,  "132": 2214,  "144": 1908,  "156": 1663}},
+        {"id": "376M", "face_in": 3.75,  "gauge": 16, "capacity_by_length_lb": {"48": 8495,  "60": 6968,  "72": 5944,  "84": 5211,  "96": 4409,  "108": 3576,  "120": 2967,  "132": 2510,  "144": 2157,  "156": 1878}},
+        {"id": "416M", "face_in": 4.125, "gauge": 16, "capacity_by_length_lb": {"48": 9661,  "60": 7885,  "72": 6706,  "84": 5855,  "96": 5220,  "108": 4314,  "120": 3571,  "132": 3013,  "144": 2579,  "156": 2240}},
+        {"id": "466M", "face_in": 4.625, "gauge": 16, "capacity_by_length_lb": {"48": 11348, "60": 9227,  "72": 7809,  "84": 6799,  "96": 6037,  "108": 5441,  "120": 4517,  "132": 3793,  "144": 3239,  "156": 2806}},
+        {"id": "506M", "face_in": 5.0,   "gauge": 16, "capacity_by_length_lb": {"48": 13060, "60": 10646, "72": 9042,  "84": 7884,  "96": 7020,  "108": 6344,  "120": 5661,  "132": 4815,  "144": 4121,  "156": 3577}},
+        {"id": "556M", "face_in": 5.5,   "gauge": 16, "capacity_by_length_lb": {"48": 14977, "60": 12164, "72": 10293, "84": 8952,  "96": 7948,  "108": 7163,  "120": 6380,  "132": 5520,  "144": 4810,  "156": 4227}},
+        {"id": "604M", "face_in": 6.0,   "gauge": 14, "capacity_by_length_lb": {"48": 20951, "60": 16938, "72": 14266, "84": 12360, "96": 10934, "108": 9815,  "120": 8715,  "132": 7551,  "144": 6588,  "156": 5769}},
+        {"id": "602M", "face_in": 6.0,   "gauge": 12, "capacity_by_length_lb": {"48": 28448, "60": 22949, "72": 19285, "84": 16653, "96": 14696, "108": 13162, "120": 11707, "132": 10165, "144": 8829,  "156": 7731}}
       ]
     },
     {
       "dealer": "Hannibal/Nucor",
       "family": "Teardrop beam",
       "confidence": "representative",
-      "source": "Anchored on Hannibal published points (120in x 5in ~5,333 lb/pair; 144in x 4.5in ~3,103 lb/pair). Confirm against Hannibal Industries current load tables.",
+      "source": "No public Hannibal load chart found (Oct 2026). Anchored on dealer-listed points (120in x 5in ~5,333 lb/pair; 144in x 4.5in ~3,103 lb/pair). Obtain current tables from Hannibal Industries / Nucor.",
       "note": "Hannibal Industries is a Nucor company. Roll-formed teardrop. Capacities per pair.",
       "models": [
-        {"id": "HN-375", "face_in": 3.75, "gauge": 16, "capacity_by_length_lb": {"96": 4350, "108": 3550, "120": 2950, "144": 2150}},
-        {"id": "HN-450", "face_in": 4.5,  "gauge": 16, "capacity_by_length_lb": {"96": 5950, "108": 4850, "120": 4050, "144": 3103}},
-        {"id": "HN-500", "face_in": 5.0,  "gauge": 16, "capacity_by_length_lb": {"96": 7050, "108": 6350, "120": 5333, "144": 4100}},
+        {"id": "HN-375", "face_in": 3.75, "gauge": 16, "capacity_by_length_lb": {"96": 4350,  "108": 3550, "120": 2950, "144": 2150}},
+        {"id": "HN-450", "face_in": 4.5,  "gauge": 16, "capacity_by_length_lb": {"96": 5950,  "108": 4850, "120": 4050, "144": 3103}},
+        {"id": "HN-500", "face_in": 5.0,  "gauge": 16, "capacity_by_length_lb": {"96": 7050,  "108": 6350, "120": 5333, "144": 4100}},
         {"id": "HN-600", "face_in": 6.0,  "gauge": 14, "capacity_by_length_lb": {"96": 10900, "108": 9800, "120": 8700, "144": 6600}}
       ]
     }
@@ -61,16 +67,37 @@
   "frames": [
     {
       "dealer": "Interlake Mecalux",
-      "family": "Roll-formed upright frame",
-      "confidence": "representative",
-      "source": "Representative roll-formed upright capacities; CONFIRM against Interlake frame load tables. Capacity governed by max unsupported length (floor to first beam / max beam spacing).",
-      "note": "Capacity per single frame. Default depths 42in / 48in.",
-      "depth_in": [42, 48],
+      "family": "Welded teardrop upright frame",
+      "confidence": "published",
+      "source": "Interlake Mecalux Selective Pallet Rack Calculation Tables U02, Ed./Rev. 15/4 (Nov 2014), p.5 'Welded frames capacities', per 2008 RMI / 2001 AISI. https://www.steinservicesupply.com/wp-content/uploads/2018/10/Load-Tables_Capacity-Charts_Selective.pdf",
+      "note": "Capacity per frame, static, incl. 2% dead load. HbL = max unsupported length. Tabulated only to 96in HbL. Valid only with Interlake Mecalux published beams.",
+      "depth_in": [36, 42, 44, 48],
       "models": [
-        {"id": "IKF-3x16", "column": "3in 16ga", "capacity_by_unsupported_length_lb": {"48": 24000, "60": 24000, "72": 22000, "84": 18500, "96": 15500, "108": 13000, "120": 11000}},
-        {"id": "IKF-3x14", "column": "3in 14ga", "capacity_by_unsupported_length_lb": {"48": 30000, "60": 30000, "72": 28000, "84": 24000, "96": 20500, "108": 17500, "120": 15000}},
-        {"id": "IKF-4x14", "column": "4in 14ga", "capacity_by_unsupported_length_lb": {"48": 45000, "60": 45000, "72": 45000, "84": 41000, "96": 36000, "108": 31500, "120": 27500}},
-        {"id": "IKF-4x12", "column": "4in 12ga", "capacity_by_unsupported_length_lb": {"48": 56000, "60": 56000, "72": 56000, "84": 51000, "96": 45000, "108": 39500, "120": 35000}}
+        {"id": "IK025F", "column": "3in x 1-5/8in, 14ga", "capacity_by_unsupported_length_lb": {"36": 23400, "42": 21900, "48": 19300, "54": 16700, "60": 15000, "66": 13400, "72": 11700, "78": 10300, "84": 9100,  "90": 8000,  "96": 7100}},
+        {"id": "IK070F", "column": "3in x 3in, 13ga",     "capacity_by_unsupported_length_lb": {"36": 28600, "42": 25900, "48": 23000, "54": 20000, "60": 17700, "66": 16000, "72": 14400, "78": 12800, "84": 11400, "90": 10200, "96": 9200}},
+        {"id": "IK075F", "column": "3in x 3in",           "capacity_by_unsupported_length_lb": {"36": 38400, "42": 34600, "48": 30600, "54": 26400, "60": 23100, "66": 20900, "72": 18700, "78": 16500, "84": 14700, "90": 13100, "96": 11800}},
+        {"id": "IK077F", "column": "3in x 3in, 12ga",     "capacity_by_unsupported_length_lb": {"36": 44300, "42": 39800, "48": 35200, "54": 30400, "60": 26600, "66": 24000, "72": 21400, "78": 19000, "84": 16900, "90": 15100, "96": 13500}},
+        {"id": "IK079F", "column": "3in x 3in, 11ga",     "capacity_by_unsupported_length_lb": {"36": 50000, "42": 44900, "48": 39700, "54": 34300, "60": 30000, "66": 27100, "72": 24100, "78": 21300, "84": 19000, "90": 16900, "96": 15200}},
+        {"id": "IK095F", "column": "4in x 3in, 13ga",     "capacity_by_unsupported_length_lb": {"36": 37500, "42": 37500, "48": 36300, "54": 33900, "60": 31300, "66": 28500, "72": 25800, "78": 23200, "84": 21700, "90": 20100, "96": 18600}},
+        {"id": "IK099F", "column": "4in x 3in, 11ga",     "capacity_by_unsupported_length_lb": {"36": 60200, "42": 60200, "48": 57900, "54": 53200, "60": 48400, "66": 43500, "72": 38700, "78": 34500, "84": 31900, "90": 29400, "96": 26800}}
+      ]
+    },
+    {
+      "dealer": "Interlake Mecalux",
+      "family": "Bolted upright frame",
+      "confidence": "published",
+      "source": "Interlake Mecalux Selective Pallet Rack Calculation Tables U02, Ed./Rev. 15/4 (Nov 2014), p.4 'Bolted frames capacities', per ANSI MH16.1-2012 (RMI 2011), Fy = 55 ksi. https://www.steinservicesupply.com/wp-content/uploads/2018/10/Load-Tables_Capacity-Charts_Selective.pdf",
+      "note": "Capacity per frame, static, incl. 2% dead load. 3B82T is the pick-module frame (square holes both sides); the PDF splits 3B82T by upright height (60-154in / 156-192in) — the lower (156-192in) column is used here for conservatism, and the column mapping was inferred from PDF text extraction: VERIFY against the printed table.",
+      "depth_in": [36, 42, 44, 48],
+      "models": [
+        {"id": "3B77",  "column": "3in, 15ga", "capacity_by_unsupported_length_lb": {"36": 19800, "42": 18600, "48": 17200, "54": 15800, "60": 14300, "66": 12800, "72": 11300, "78": 10000, "84": 8800,  "90": 7800,  "96": 7100,  "102": 6400,  "108": 5700,  "114": 5200,  "120": 4700}},
+        {"id": "3B80",  "column": "3in, 14ga", "capacity_by_unsupported_length_lb": {"36": 24200, "42": 22600, "48": 20900, "54": 19000, "60": 17200, "66": 15300, "72": 13400, "78": 11800, "84": 10200, "90": 8900,  "96": 7800,  "102": 7000,  "108": 6300,  "114": 5600,  "120": 5100}},
+        {"id": "3B81",  "column": "3in, 13ga", "capacity_by_unsupported_length_lb": {"36": 27400, "42": 25600, "48": 23600, "54": 21500, "60": 19400, "66": 17200, "72": 15300, "78": 13200, "84": 11500, "90": 10100, "96": 8900,  "102": 7900,  "108": 7100,  "114": 6400,  "120": 5800}},
+        {"id": "3B82",  "column": "3in, 12ga", "capacity_by_unsupported_length_lb": {"36": 32600, "42": 30500, "48": 28000, "54": 25600, "60": 23000, "66": 20600, "72": 18100, "78": 15800, "84": 13700, "90": 12000, "96": 10600, "102": 9400,  "108": 8400,  "114": 7500,  "120": 6900}},
+        {"id": "3B82T", "column": "3in, 12ga (pick module)", "capacity_by_unsupported_length_lb": {"36": 35500, "42": 32700, "48": 29700, "54": 26700, "60": 23600, "66": 20600, "72": 17700, "78": 15200, "84": 13100, "90": 11600, "96": 10200, "102": 9000,  "108": 8000,  "114": 7300,  "120": 6600}},
+        {"id": "4B101", "column": "4in, 13ga", "capacity_by_unsupported_length_lb": {"36": 40800, "42": 39000, "48": 36900, "54": 34700, "60": 32400, "66": 30000, "72": 27600, "78": 25200, "84": 22800, "90": 20600, "96": 18300, "102": 16300, "108": 14600, "114": 13100, "120": 11900}},
+        {"id": "4B102", "column": "4in, 12ga", "capacity_by_unsupported_length_lb": {"36": 47800, "42": 45800, "48": 43300, "54": 40800, "60": 38100, "66": 35300, "72": 32500, "78": 29700, "84": 27000, "90": 24300, "96": 21700, "102": 19300, "108": 17200, "114": 15500, "120": 14000}},
+        {"id": "5B122", "column": "5in, 12ga", "capacity_by_unsupported_length_lb": {"36": 55000, "42": 53200, "48": 51300, "54": 49100, "60": 46800, "66": 44400, "72": 41800, "78": 39200, "84": 36700, "90": 34000, "96": 31500, "102": 28900, "108": 26500, "114": 24000, "120": 21800}}
       ]
     },
     {
@@ -78,25 +105,25 @@
       "family": "Structural channel frame",
       "confidence": "published",
       "source": "SpaceRAK Structural Channel Frames Capacity Chart (9/24/18), per 2002 RMI/AISI. https://heartlandsteel.com/assets/images/pdfs/spacerak/SpaceRAK_StructuralChannelFramesCapacityChart.pdf",
-      "note": "Capacity per single frame, by max unsupported length (floor to top of lowest beam, or max beam spacing). H:D ratio <= 6:1 for single-row.",
+      "note": "Capacity per single frame, by max unsupported length. Not valid for single-row frames with H:D > 6:1. Valid only with SpaceRAK beams.",
       "depth_in": [36, 42, 48],
       "models": [
-        {"id": "335B", "column": "3in 3.5lb/ft", "capacity_by_unsupported_length_lb": {"48": 34400, "60": 34400, "66": 33400, "72": 29400, "84": 22000, "96": 16900, "108": 13400, "120": 10900}},
-        {"id": "341B", "column": "3in 4.1lb/ft", "capacity_by_unsupported_length_lb": {"48": 38400, "60": 38400, "66": 35900, "72": 31400, "84": 23500, "96": 18000, "108": 14300, "120": 11600}},
-        {"id": "445B", "column": "4in 4.5lb/ft", "capacity_by_unsupported_length_lb": {"48": 51600, "60": 51600, "66": 51600, "72": 51600, "84": 46100, "96": 38400, "108": 31200, "120": 25300}},
-        {"id": "454B", "column": "4in 5.4lb/ft", "capacity_by_unsupported_length_lb": {"48": 57300, "60": 57300, "66": 57300, "72": 57300, "84": 49900, "96": 40900, "108": 32700, "120": 26600}}
+        {"id": "335B", "column": "3in 3.5lb/ft", "capacity_by_unsupported_length_lb": {"36": 34400, "48": 34400, "60": 34400, "66": 33400, "72": 29400, "78": 25500, "84": 22000, "90": 19200, "96": 16900, "102": 15000, "108": 13400, "114": 12100, "120": 10900}},
+        {"id": "341B", "column": "3in 4.1lb/ft", "capacity_by_unsupported_length_lb": {"36": 38400, "48": 38400, "60": 38400, "66": 35900, "72": 31400, "78": 27100, "84": 23500, "90": 20500, "96": 18000, "102": 16000, "108": 14300, "114": 12800, "120": 11600}},
+        {"id": "445B", "column": "4in 4.5lb/ft", "capacity_by_unsupported_length_lb": {"36": 51600, "48": 51600, "60": 51600, "66": 51600, "72": 51600, "78": 50000, "84": 46100, "90": 42200, "96": 38400, "102": 34800, "108": 31200, "114": 28000, "120": 25300}},
+        {"id": "454B", "column": "4in 5.4lb/ft", "capacity_by_unsupported_length_lb": {"36": 57300, "48": 57300, "60": 57300, "66": 57300, "72": 57300, "78": 54500, "84": 49900, "90": 45300, "96": 40900, "102": 36600, "108": 32700, "114": 29400, "120": 26600}}
       ]
     },
     {
       "dealer": "Hannibal/Nucor",
       "family": "Roll-formed upright frame",
       "confidence": "representative",
-      "source": "Representative roll-formed upright capacities; CONFIRM against Hannibal Industries current frame load tables.",
-      "note": "Hannibal Industries is a Nucor company. Capacity per single frame. Default depths 42in / 48in.",
+      "source": "No public Hannibal frame chart found (Oct 2026). Representative roll-formed upright capacities; obtain current tables from Hannibal Industries / Nucor.",
+      "note": "Capacity per single frame.",
       "depth_in": [42, 48],
       "models": [
-        {"id": "HNF-3x16", "column": "3in 16ga", "capacity_by_unsupported_length_lb": {"48": 25000, "60": 25000, "72": 23000, "84": 19000, "96": 16000, "108": 13500, "120": 11500}},
-        {"id": "HNF-3x14", "column": "3in 14ga", "capacity_by_unsupported_length_lb": {"48": 31000, "60": 31000, "72": 29000, "84": 25000, "96": 21000, "108": 18000, "120": 15500}},
+        {"id": "HNF-3x16",   "column": "3in 16ga",    "capacity_by_unsupported_length_lb": {"48": 25000, "60": 25000, "72": 23000, "84": 19000, "96": 16000, "108": 13500, "120": 11500}},
+        {"id": "HNF-3x14",   "column": "3in 14ga",    "capacity_by_unsupported_length_lb": {"48": 31000, "60": 31000, "72": 29000, "84": 25000, "96": 21000, "108": 18000, "120": 15500}},
         {"id": "HNF-425x13", "column": "4.25in 13ga", "capacity_by_unsupported_length_lb": {"48": 48000, "60": 48000, "72": 48000, "84": 43000, "96": 38000, "108": 33000, "120": 29000}}
       ]
     }

@@ -1,0 +1,49 @@
+{
+  "project_id": "##-####",
+  "name": "Client — short description",
+  "client": "",
+  "drawing": "",
+  "site": {
+    "address": "",
+    "zip": "",
+    "lat": null,
+    "lon": null,
+    "jurisdiction": "UT",
+    "risk_category": "II",
+    "site_class": "Default",
+    "code_edition": "asce7-16"
+  },
+  "building": {
+    "ceiling_height_ft": null,
+    "ceiling_height_confirmed": false,
+    "deflector_height_ft": null
+  },
+  "insurer": "UNKNOWN",
+  "fire": {
+    "commodity": "Class IV",
+    "commodity_confirmed": false,
+    "commodity_note": "",
+    "storage_method": "rack",
+    "storage_height_ft": null,
+    "aisle_width_ft": null,
+    "rack_depth_ft": null,
+    "row_type": null,
+    "shelving": "none",
+    "deck_open_pct": null,
+    "flues_maintained": true,
+    "shelf_area_ft2": null,
+    "encapsulated": false,
+    "beam_elevations_in": null
+  },
+  "rack": {
+    "load_height_in": null,
+    "load_weight_lb": null,
+    "shelf_load_lb": null,
+    "beam_length_in": null,
+    "beam_options_in": [],
+    "in_rack_sprinklers": null,
+    "notes": ""
+  },
+  "open_questions": [],
+  "history": []
+}

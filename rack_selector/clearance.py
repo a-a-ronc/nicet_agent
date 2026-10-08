@@ -37,6 +37,7 @@ class BeamLayout:
     building_clear_height_in: Optional[float] = None
     nfpa_ok: Optional[bool] = None
     flags: list = field(default_factory=list)
+    deflector_clearance_in: float = 18.0
 
     def as_dict(self) -> dict:
         return {
@@ -53,15 +54,21 @@ class BeamLayout:
             "required_frame_height_in": round(self.required_frame_height_in, 1),
             "max_beam_spacing_in": round(self.max_beam_spacing_in, 1),
             "building_clear_height_in": self.building_clear_height_in,
-            "nfpa_18in_deflector_ok": self.nfpa_ok,
+            "deflector_clearance_required_in": self.deflector_clearance_in,
+            "nfpa_deflector_clearance_ok": self.nfpa_ok,
             "flags": self.flags,
         }
+
+
+DEFLECTOR_CLEARANCE_IN = {"standard": 18.0, "esfr": 36.0, "cmsa": 36.0}
 
 
 def beam_layout(pallet_height_in: float, beam_height_in: float, num_beam_levels: int,
                 in_rack_sprinklers: bool, floor_level: bool = True,
                 first_beam_top_in: Optional[float] = None,
-                building_clear_height_in: Optional[float] = None) -> BeamLayout:
+                building_clear_height_in: Optional[float] = None,
+                ceiling_sprinkler: str = "standard",
+                hole_pitch_in: Optional[float] = None) -> BeamLayout:
     """
     Compute beam top elevations and clearance checks.
 
@@ -75,6 +82,10 @@ def beam_layout(pallet_height_in: float, beam_height_in: float, num_beam_levels:
 
     clearance = clearance_for(in_rack_sprinklers)
     pitch = pallet_height_in + clearance + beam_height_in
+    if hole_pitch_in:
+        import math
+        pitch = math.ceil(pitch / hole_pitch_in - 1e-9) * hole_pitch_in
+    deflector_req = DEFLECTOR_CLEARANCE_IN.get((ceiling_sprinkler or "standard").lower(), 18.0)
 
     if first_beam_top_in is None:
         # Lowest beam sits one pitch above the floor (above the floor-supported load),
@@ -93,12 +104,13 @@ def beam_layout(pallet_height_in: float, beam_height_in: float, num_beam_levels:
     flags: list[str] = []
     nfpa_ok: Optional[bool] = None
     if building_clear_height_in is not None:
-        nfpa_ok = (top_of_storage + NFPA_DEFLECTOR_CLEARANCE_IN) <= building_clear_height_in + 1e-6
+        nfpa_ok = (top_of_storage + deflector_req) <= building_clear_height_in + 1e-6
         if not nfpa_ok:
-            need = top_of_storage + NFPA_DEFLECTOR_CLEARANCE_IN
+            need = top_of_storage + deflector_req
             flags.append(
-                f"NFPA 13: top of storage ({top_of_storage:.1f} in) + 18 in = {need:.1f} in "
-                f"exceeds building clear height ({building_clear_height_in:.1f} in). "
+                f"NFPA 13: top of storage ({top_of_storage:.1f} in) + {deflector_req:.0f} in "
+                f"({ceiling_sprinkler} deflector clearance) = {need:.1f} in exceeds the "
+                f"deflector/clear height ({building_clear_height_in:.1f} in). "
                 f"Lower storage, raise ceiling, or reduce levels."
             )
         if required_frame_height > building_clear_height_in + 1e-6:
@@ -114,5 +126,5 @@ def beam_layout(pallet_height_in: float, beam_height_in: float, num_beam_levels:
         beam_top_elevations_in=beam_tops, top_of_storage_in=top_of_storage,
         required_frame_height_in=required_frame_height, max_beam_spacing_in=max_beam_spacing,
         storage_levels=storage_levels, building_clear_height_in=building_clear_height_in,
-        nfpa_ok=nfpa_ok, flags=flags,
+        nfpa_ok=nfpa_ok, flags=flags, deflector_clearance_in=deflector_req,
     )

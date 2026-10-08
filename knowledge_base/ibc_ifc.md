@@ -46,9 +46,13 @@ sprinklers and frontage.
 ## 3. IFC Chapter 32 — High-Piled Combustible Storage
 
 **Trigger ("high-piled combustible storage"):** storage of combustible material in
-piles / on pallets / in racks / on shelves where the **top of storage > 12 ft**, OR
-**> 6 ft for high-hazard commodities** (high-hazard = Class IV and Group A plastics,
-and other listed high-challenge commodities).
+piles / on pallets / in racks / on shelves where the **top of storage > 12 ft**. **When
+required by the fire code official**, it also includes **high-hazard commodities above
+6 ft** — high-hazard (IFC §3203.6) = products beyond Class I–IV, e.g. **Group A plastics
+not otherwise classified**, rubber tires, idle combustible pallets, flammable solids.
+**Class IV is NOT a high-hazard commodity** (it uses the 12 ft trigger); Group B plastics
+are treated as Class IV and Group C as Class III. *Correction:* an earlier version of this
+KB grouped Class IV with high-hazard — that was wrong.
 
 **What Chapter 32 controls (via Table 3206.2, indexed by commodity class + pile area):**
 - Automatic sprinklers and whether **in-rack** sprinklers are required.

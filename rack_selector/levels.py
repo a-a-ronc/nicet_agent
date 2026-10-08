@@ -154,6 +154,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     a = build_parser().parse_args(argv)
+    from ._io import safe_stdout
+    safe_stdout()
     load_h, beams, defl_ft = a.load_height, None, a.deflector_height_ft
     if a.beams:
         beams = [float(x) for x in a.beams.split(",") if x.strip()]

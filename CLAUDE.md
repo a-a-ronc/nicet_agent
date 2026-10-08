@@ -79,8 +79,10 @@ storage: **18 in. standard spray, 36 in. ESFR/CMSA**.
 - State the human-review requirement on anything that affects a permit or build.
 
 ## Tools (run from the repo root; `python -m pytest` runs the test suite)
-- `python -m rack_selector.ask "question"` — **query index over the KB**: BM25 over
-  heading-level sections of `knowledge_base/*.md` + `methodology.md` with domain synonyms;
+- `python -m rack_selector.ask "question"` — **query index**: BM25 over heading-level
+  sections of `knowledge_base/*.md`, `rack_selector/methodology.md` + `README.md`, every
+  project profile (overview / open questions / history) and every rack catalog family,
+  with domain synonyms, plural folding and a heading boost;
   returns ranked sections (file:line, best-matching line) and routes to the tool below
   that gives the numeric answer. Index cached in `knowledge_base/_index.json` (gitignored,
   auto-rebuilt when any KB file changes; `--rebuild` forces it). Use it to locate and
@@ -102,7 +104,16 @@ storage: **18 in. standard spray, 36 in. ESFR/CMSA**.
   tables only — seismic adequacy needs the manufacturer's seismic calc + PE.
 - Triage only — see `rack_selector/methodology.md`.
 
+## Testing
+`python -m pytest` (161 tests: unit, retrieval-quality battery, index completeness,
+data integrity, integration, mocked network, subprocess end-to-end, Windows cp1252
+console; live network tests opt-in with `NICET_NETWORK=1`). CI runs Ubuntu + Windows ×
+Python 3.10–3.13 with a 90 % coverage floor. When you add KB content, a tool rule or a
+catalog entry, add or update a test — and add any new realistic question to the
+`BATTERY` in `rack_selector/tests/test_ask.py`.
+
 ## Roadmap (future)
+- Validate tool conclusions against FPE-reviewed project designs (golden cases).
 - Hannibal/Nucor published load tables (request from Hannibal/Nucor rep).
 - Anchor/base-plate + overstrength checks; double-deep / push-back / drive-in.
 - Sprinkler-density lookup by adopted edition (needs licensed table data).

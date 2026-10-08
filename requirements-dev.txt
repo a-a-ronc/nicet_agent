@@ -1,0 +1,4 @@
+# The tools themselves use only the Python standard library (3.10+).
+# These are for running the test suite and coverage report.
+pytest>=7
+coverage>=7

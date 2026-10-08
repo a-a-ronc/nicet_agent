@@ -626,6 +626,8 @@ def inputs_from_args(args) -> FireInputs:
 
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
+    from ._io import safe_stdout
+    safe_stdout()
     try:
         a = assess(inputs_from_args(args))
     except ValueError as exc:

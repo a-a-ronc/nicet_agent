@@ -73,6 +73,7 @@ Gravity load tables only. The Interlake bolted 3B82T (pick-module frame) column 
 was inferred from PDF text extraction — verify against the printed table.
 
 ## Other files
-`seismic.py` (Cs math + USGS fetch) · `geocode.py` · `catalog.py` · `clearance.py` ·
+`ask.py` (query index over KB + project profiles + catalog) · `_io.py` (Windows-safe
+console output) · `seismic.py` (Cs math + USGS fetch) · `geocode.py` · `catalog.py` · `clearance.py` ·
 `selector.py` · `levels.py` · `fire_check.py` · `project.py` · `data/adopted_codes.json`
 · `methodology.md` (**read this**) · `tests/` (`python -m pytest`).

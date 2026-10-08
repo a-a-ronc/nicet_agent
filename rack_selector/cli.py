@@ -153,6 +153,8 @@ def _seismic_from_args(args) -> SeismicResult:
 
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
+    from ._io import safe_stdout
+    safe_stdout()
     _apply_project(args)
     missing = [n for n, v in (("--pallet-height/--load-height", args.pallet_height),
                               ("--beam-length", args.beam_length), ("--levels", args.levels))

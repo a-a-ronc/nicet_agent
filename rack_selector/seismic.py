@@ -1,12 +1,18 @@
 """
-Seismic parameters and base-shear per ASCE 7-22 / ANSI-RMI MH16.1-2023 (steel storage
+Seismic parameters and base-shear per ASCE 7-16 / 7-22 and ANSI-RMI MH16.1 (steel storage
 racks). Pure-math functions are kept separate from the network fetch so they can be
 unit-tested without internet.
 
 References:
-  - ASCE/SEI 7-22 §11.4 (design parameters), §12.8 (seismic response coefficient Cs)
-  - ANSI/RMI MH16.1-2023 (rack seismic; R, Ip, product reduction factor)
-  - USGS ASCE7-22 web service: https://earthquake.usgs.gov/ws/designmaps/asce7-22.html
+  - ASCE/SEI 7 §11.4 (design parameters), §11.6 (SDC), §12.8 (seismic response coefficient)
+  - ASCE/SEI 7-16 §11.4.3/11.4.4 (default Site Class D -> Fa >= 1.2),
+    §11.4.8 Exception 2 (Site Class D, S1 >= 0.2: no site-specific study when Cs uses
+    Eq. 12.8-2 for T <= 1.5Ts)
+  - ANSI/RMI MH16.1 (rack seismic; R, Ip, product reduction factor)
+  - USGS building-codes web services:
+      https://earthquake.usgs.gov/ws/building-codes/asce7-16/calculate
+      https://earthquake.usgs.gov/ws/building-codes/asce7-22/calculate
+    (the older /ws/designmaps/asce7-XX.json URLs redirect here)
 
 CAUTION: Cs here uses the short-period (governing-upper) value floored by the code
 minimum. The period-based reduction (T, which lowers Cs) is intentionally NOT applied,
@@ -16,27 +22,59 @@ so the result is conservative for triage. A licensed PE must run the full analys
 from __future__ import annotations
 
 import json
-import math
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass, field
 from typing import Optional
 
-USGS_ASCE7_22 = "https://earthquake.usgs.gov/ws/designmaps/asce7-22.json"
-USGS_ASCE7_16 = "https://earthquake.usgs.gov/ws/designmaps/asce7-16.json"
+USGS_ASCE7_22 = "https://earthquake.usgs.gov/ws/building-codes/asce7-22/calculate"
+USGS_ASCE7_16 = "https://earthquake.usgs.gov/ws/building-codes/asce7-16/calculate"
 
 # Map a reference-document key to its USGS endpoint. ASCE 7-16 is what IBC 2018/2021
 # (and therefore current Utah/SLC permits) reference; ASCE 7-22 is IBC 2024.
 _ENDPOINTS = {"ASCE7-22": USGS_ASCE7_22, "ASCE7-16": USGS_ASCE7_16}
 
+# Site classes each USGS service accepts. ASCE 7-16 has no "Default" class: §11.4.3 says
+# use Site Class D when soil properties are unknown (with the §11.4.4 Fa >= 1.2 floor).
+# Site Class F always needs a site-specific study, so it is not offered.
+SITE_CLASSES = {
+    "ASCE7-16": {"A", "B", "C", "D", "E"},
+    "ASCE7-22": {"DEFAULT", "A", "B", "BC", "C", "CD", "D", "DE", "E"},
+}
+DEFAULT_SITE_CLASS_FA_MIN = 1.2  # ASCE 7-16 §11.4.4
 
-def endpoint_for(reference_document: str) -> str:
-    """Return the USGS endpoint for a reference document ('ASCE7-22' or 'ASCE7-16')."""
+
+def _ref_key(reference_document: str) -> str:
     key = (reference_document or "").upper().replace(" ", "").replace("/", "")
     if key not in _ENDPOINTS:
         raise ValueError(f"Unsupported reference document {reference_document!r}; "
                          f"use one of {sorted(_ENDPOINTS)}")
-    return _ENDPOINTS[key]
+    return key
+
+
+def endpoint_for(reference_document: str) -> str:
+    """Return the USGS endpoint for a reference document ('ASCE7-22' or 'ASCE7-16')."""
+    return _ENDPOINTS[_ref_key(reference_document)]
+
+
+def resolve_site_class(site_class: Optional[str], reference_document: str) -> tuple[str, bool]:
+    """
+    Return (site class to send to USGS, used_default_D).
+
+    ASCE 7-22 accepts 'Default'. ASCE 7-16 does not: an unknown/default site becomes
+    Site Class D per §11.4.3, and the caller must then apply the §11.4.4 Fa >= 1.2 floor.
+    """
+    ref = _ref_key(reference_document)
+    sc = (site_class or "Default").strip().upper()
+    if ref == "ASCE7-16" and sc == "DEFAULT":
+        return "D", True
+    if sc not in SITE_CLASSES[ref]:
+        allowed = ", ".join(sorted(SITE_CLASSES[ref]))
+        raise ValueError(f"Site Class {site_class!r} is not valid for {ref}. Use one of: "
+                         f"{allowed}" + (" (or Default)" if ref == "ASCE7-16" else "") +
+                         ". Site Class F requires a site-specific study.")
+    return ("Default" if sc == "DEFAULT" else sc), False
+
 
 # RMI / ASCE 7 default response-modification factors for steel storage racks.
 R_DOWN_AISLE = 6.0   # down-aisle: typ. steel ordinary moment frame
@@ -52,7 +90,7 @@ class SeismicResult:
     risk_category: str
     site_class: str
     sds: float
-    sd1: float
+    sd1: Optional[float]  # None when USGS defers to a site-specific study (7-16 §11.4.8)
     s1: float
     sdc: str
     ss: Optional[float] = None
@@ -81,16 +119,16 @@ class SeismicResult:
         }
 
 
-def compute_cs(sds: float, sd1: float, s1: float, r: float, ie: float = 1.0,
+def compute_cs(sds: float, sd1: Optional[float], s1: float, r: float, ie: float = 1.0,
                t: Optional[float] = None, tl: float = 8.0) -> float:
     """
-    Seismic response coefficient Cs per ASCE 7-22 §12.8.1.1.
+    Seismic response coefficient Cs per ASCE 7 §12.8.1.1.
 
-    sds, sd1, s1 : design spectral accelerations (g)
+    sds, sd1, s1 : design spectral accelerations (g); sd1 may be None (only needed for T)
     r            : response modification factor
     ie           : importance factor (Ip for racks; 1.0 typ., 1.5 if open to public)
     t            : fundamental period (s); if None, the period cap is not applied
-                   (conservative — returns the short-period value)
+                   (conservative — returns the short-period value, Eq. 12.8-2)
     tl           : long-period transition (s)
     """
     if r <= 0:
@@ -102,6 +140,10 @@ def compute_cs(sds: float, sd1: float, s1: float, r: float, ie: float = 1.0,
 
     # Period-based cap (Eq. 12.8-3 / 12.8-4) — only if a period is supplied.
     if t is not None and t > 0:
+        if sd1 is None:
+            raise ValueError("SD1 is required for a period-based Cs; it is unavailable "
+                             "(ASCE 7-16 §11.4.8) — use the short-period Cs or a "
+                             "site-specific study.")
         if t <= tl:
             cs_cap = sd1 / (t * (r / ie))
         else:
@@ -114,6 +156,45 @@ def compute_cs(sds: float, sd1: float, s1: float, r: float, ie: float = 1.0,
         cs_min = max(cs_min, 0.5 * s1 / (r / ie))
 
     return max(cs, cs_min)
+
+
+# --- Seismic Design Category (ASCE 7 §11.6) --------------------------------------------
+_SDC_ORDER = "ABCDEF"
+
+
+def sdc_from_sds(sds: float, risk_category: str = "II") -> str:
+    """ASCE 7 Table 11.6-1."""
+    iv = risk_category.upper() == "IV"
+    if sds < 0.167:
+        return "A"
+    if sds < 0.33:
+        return "C" if iv else "B"
+    if sds < 0.50:
+        return "D" if iv else "C"
+    return "D"
+
+
+def sdc_from_sd1(sd1: float, risk_category: str = "II") -> str:
+    """ASCE 7 Table 11.6-2."""
+    iv = risk_category.upper() == "IV"
+    if sd1 < 0.067:
+        return "A"
+    if sd1 < 0.133:
+        return "C" if iv else "B"
+    if sd1 < 0.20:
+        return "D" if iv else "C"
+    return "D"
+
+
+def determine_sdc(sds: float, sd1: Optional[float], s1: float,
+                  risk_category: str = "II") -> str:
+    """Most severe of Tables 11.6-1 / 11.6-2; S1 >= 0.75 -> E (RC I-III) or F (RC IV)."""
+    cands = [sdc_from_sds(sds, risk_category)]
+    if sd1 is not None:
+        cands.append(sdc_from_sd1(sd1, risk_category))
+    if s1 >= 0.75:
+        cands.append("F" if risk_category.upper() == "IV" else "E")
+    return max(cands, key=_SDC_ORDER.index)
 
 
 def seismic_weight(dead_load_lb: float, product_load_lb: float,
@@ -167,49 +248,100 @@ def fetch_seismic(latitude: float, longitude: float, risk_category: str = "II",
                   r_down: float = R_DOWN_AISLE, r_cross: float = R_CROSS_AISLE,
                   ie: float = 1.0, reference_document: str = "ASCE7-22") -> SeismicResult:
     """
-    Query the USGS design-maps web service and return a SeismicResult with Cs computed for
-    both rack axes. Network call — not exercised by the offline unit tests.
+    Query the USGS building-codes web service and return a SeismicResult with Cs computed
+    for both rack axes. Network call (mocked in the offline tests).
 
     reference_document: 'ASCE7-22' (IBC 2024) or 'ASCE7-16' (IBC 2018/2021 — current
-    Utah/SLC permits). The Cs equations (ASCE 7 §12.8) are identical between editions; the
-    site parameters returned by USGS differ.
+    Utah/SLC permits). For ASCE 7-16 a 'Default' site class is sent as Site Class D and the
+    §11.4.4 Fa >= 1.2 floor is applied to the returned values.
     """
+    ref = _ref_key(reference_document)
+    usgs_site_class, default_d = resolve_site_class(site_class, ref)
     params = {
         "latitude": latitude,
         "longitude": longitude,
         "riskCategory": risk_category,
-        "siteClass": site_class,
+        "siteClass": usgs_site_class,
         "title": title,
     }
-    url = endpoint_for(reference_document) + "?" + urllib.parse.urlencode(params)
-    req = urllib.request.Request(url, headers={"User-Agent": "nicet_agent/0.1"})
+    url = endpoint_for(ref) + "?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"User-Agent": "nicet_agent/0.2"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310 (trusted gov host)
         payload = json.loads(resp.read().decode("utf-8"))
 
-    if payload.get("request", {}).get("status") != "success":
-        raise RuntimeError(f"USGS request failed: {payload.get('request', {}).get('status')}")
+    status = payload.get("request", {}).get("status")
+    if status != "success":
+        detail = payload.get("response")
+        detail = detail if isinstance(detail, str) else ""
+        raise RuntimeError(f"USGS {ref} request failed: {status}"
+                           + (f" — {detail}" if detail else ""))
     data = payload["response"]["data"]
     res = seismic_result_from_usgs(data, latitude, longitude, risk_category,
-                                   site_class, r_down, r_cross, ie)
-    res.source = f"USGS {reference_document} web service"
+                                   site_class or "Default", r_down, r_cross, ie,
+                                   reference_document=ref, default_site_class=default_d)
+    res.source = f"USGS {ref} web service"
     return res
+
+
+def _num(v) -> Optional[float]:
+    return None if v is None else float(v)
 
 
 def seismic_result_from_usgs(data: dict, latitude: float, longitude: float,
                              risk_category: str, site_class: str,
                              r_down: float = R_DOWN_AISLE,
                              r_cross: float = R_CROSS_AISLE,
-                             ie: float = 1.0) -> SeismicResult:
-    """Build a SeismicResult from a parsed USGS 'data' object (testable, no network)."""
-    sds = float(data["sds"])
-    sd1 = float(data["sd1"])
-    s1 = float(data["s1"])
-    sdc = str(data["sdc"])
-    ss = float(data.get("ss")) if data.get("ss") is not None else None
+                             ie: float = 1.0, reference_document: str = "ASCE7-22",
+                             default_site_class: bool = False) -> SeismicResult:
+    """
+    Build a SeismicResult from a parsed USGS 'data' object (testable, no network).
+
+    Handles the ASCE 7-16 cases that USGS leaves to the engineer:
+      * default Site Class D -> enforce Fa >= 1.2 (§11.4.4) and recompute SMS/SDS;
+      * SD1 / Fv / SDC returned as null (§11.4.8, Site Class D with S1 >= 0.2) -> keep SD1
+        as None, derive the SDC from SDS (Table 11.6-1) and S1, and note Exception 2.
+    """
+    ref = _ref_key(reference_document)
+    notes: list = []
+    sds, sd1 = _num(data.get("sds")), _num(data.get("sd1"))
+    s1, ss = _num(data.get("s1")), _num(data.get("ss"))
+    if sds is None or s1 is None:
+        raise RuntimeError("USGS response is missing SDS or S1 — cannot compute Cs.")
+    sdc = data.get("sdc")
+    recompute_sdc = sdc is None
+
+    if ref == "ASCE7-16" and default_site_class and ss is not None:
+        fa = _num(data.get("fa"))
+        if fa is None or fa < DEFAULT_SITE_CLASS_FA_MIN:
+            new_sds = 2.0 / 3.0 * DEFAULT_SITE_CLASS_FA_MIN * ss
+            if new_sds > sds:
+                notes.append(
+                    f"ASCE 7-16 §11.4.4: Site Class D used as the DEFAULT (no soils report) "
+                    f"-> Fa >= 1.2 applied (USGS Fa for Site Class D = {fa}). SDS raised from "
+                    f"{sds:.3f} g to {new_sds:.3f} g. A geotechnical report establishing the "
+                    f"actual site class removes this floor.")
+                sds = new_sds
+                recompute_sdc = True
+        else:
+            notes.append("ASCE 7-16 §11.4.4: default Site Class D, Fa >= 1.2 already satisfied.")
+
+    if sd1 is None:
+        notes.append(
+            "SD1 not provided by USGS (ASCE 7-16 §11.4.8: Site Class D with S1 >= 0.2 calls for "
+            "a site-specific ground-motion study). Exception 2 waives it when Cs uses "
+            "Eq. 12.8-2 for T <= 1.5Ts (as this tool does) and 1.5 x Eq. 12.8-3 above that — "
+            "PE to confirm. SDC taken from SDS and S1.")
+
+    if recompute_sdc:
+        derived = determine_sdc(sds, sd1, s1, risk_category)
+        usgs_sdc = sdc or data.get("sdcs")
+        sdc = (max([derived, usgs_sdc], key=_SDC_ORDER.index)
+               if usgs_sdc in tuple(_SDC_ORDER) else derived)
 
     res = SeismicResult(
         latitude=latitude, longitude=longitude, risk_category=risk_category,
-        site_class=site_class, sds=sds, sd1=sd1, s1=s1, sdc=sdc, ss=ss, ie=ie,
+        site_class=("D (default)" if default_site_class else site_class),
+        sds=sds, sd1=sd1, s1=s1, sdc=str(sdc), ss=ss, ie=ie, notes=notes,
     )
     res.cs_down_aisle = compute_cs(sds, sd1, s1, r_down, ie)
     res.cs_cross_aisle = compute_cs(sds, sd1, s1, r_cross, ie)
@@ -218,5 +350,3 @@ def seismic_result_from_usgs(data: dict, latitude: float, longitude: float,
         f"R down-aisle={r_down}, R cross-aisle={r_cross}, Ie/Ip={ie}."
     )
     return res
-
-# Reference editions: ASCE 7-22 (IBC 2024) and ASCE 7-16 (IBC 2018/2021, Utah/SLC).

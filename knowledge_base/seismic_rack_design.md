@@ -101,6 +101,18 @@ pattern. Source: Interlake Mecalux Selective Pallet Rack Calculation Tables U02 
 Seismic design loads follow the **adopted** IBC: IBC 2018/2021 → **ASCE 7-16** (Utah, WA
 today); IBC 2024 → ASCE 7-22 (California 2025 CBC). See `adopted_codes_*.md`.
 
+**ASCE 7-16 site-class traps (handled by `rack_selector`):**
+- There is **no "Default" site class** in 7-16. With no soils report, §11.4.3 says use
+  **Site Class D**, and §11.4.4 then requires **Fa ≥ 1.2**. At the New Balance SLC site
+  USGS returns Fa = 1.0 for Site Class D, so the floor raises SDS from 1.045 g to 1.254 g
+  (+20%). Swapping "Default" for "D" without the floor understates seismic demand.
+- For **Site Class D with S1 ≥ 0.2**, USGS returns **SD1 / Fv / SDC as null** (§11.4.8,
+  site-specific study). **Exception 2** waives the study when Cs uses Eq. 12.8-2 for
+  T ≤ 1.5Ts and 1.5 × Eq. 12.8-3 above that; the tool's short-period Cs matches that, and
+  the SDC is taken from SDS (Table 11.6-1) and S1. The PE confirms.
+- USGS moved the services to `/ws/building-codes/asce7-XX/calculate` (old
+  `/ws/designmaps/asce7-XX.json` URLs redirect).
+
 ## Sources
 - [ANSI MH16.1-2023 overview — Apex](https://www.apexwarehousesystems.com/ansi-updates-steel-pallet-racking-standards-apex-answers-your-questions/)
 - [ANSI MH16.1-2023 excerpts — Damotech](https://www.damotech.com/blog/ansi-mh-16.1-excerpts)

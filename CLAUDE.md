@@ -105,7 +105,7 @@ storage: **18 in. standard spray, 36 in. ESFR/CMSA**.
 - Triage only — see `rack_selector/methodology.md`.
 
 ## Testing
-`python -m pytest` (161 tests: unit, retrieval-quality battery, index completeness,
+`python -m pytest` (178 tests: unit, retrieval-quality battery, index completeness,
 data integrity, integration, mocked network, subprocess end-to-end, Windows cp1252
 console; live network tests opt-in with `NICET_NETWORK=1`). CI runs Ubuntu + Windows ×
 Python 3.10–3.13 with a 90 % coverage floor. When you add KB content, a tool rule or a

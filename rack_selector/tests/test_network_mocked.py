@@ -43,8 +43,8 @@ USGS_OK = {"request": {"status": "success"},
            "response": {"data": {"sds": 1.0, "sd1": 0.6, "s1": 0.55, "sdc": "D", "ss": 1.5}}}
 
 
-@pytest.mark.parametrize("ref, endpoint", [("ASCE7-16", "asce7-16.json"),
-                                           ("ASCE7-22", "asce7-22.json")])
+@pytest.mark.parametrize("ref, endpoint", [("ASCE7-16", "asce7-16/calculate"),
+                                           ("ASCE7-22", "asce7-22/calculate")])
 def test_fetch_seismic_endpoint_params_and_cs(fake_urlopen, ref, endpoint):
     calls, payloads = fake_urlopen
     payloads[endpoint] = USGS_OK
@@ -59,9 +59,65 @@ def test_fetch_seismic_endpoint_params_and_cs(fake_urlopen, ref, endpoint):
 
 def test_fetch_seismic_error_status(fake_urlopen):
     _, payloads = fake_urlopen
-    payloads["asce7-22.json"] = {"request": {"status": "error"}}
-    with pytest.raises(RuntimeError):
+    payloads["asce7-22/calculate"] = {"request": {"status": "error"},
+                                      "response": "Site class [X] not supported"}
+    with pytest.raises(RuntimeError, match="not supported"):
         seismic.fetch_seismic(40.0, -111.0)
+
+
+# --- ASCE 7-16 regressions from the live CI failure (2026-10-08) ------------------------
+# Real USGS ASCE7-16 response for the New Balance SLC site, Site Class D (recorded via the
+# live service): SD1 / SDC are null because of §11.4.8, Fa = 1.0.
+SLC_7_16_SITE_D = {"request": {"status": "success"}, "response": {"data": {
+    "sds": 1.045, "sd1": None, "sdc": None, "ss": 1.568, "s1": 0.567, "sms": 1.568,
+    "sm1": None, "fa": 1.0, "fv": None, "fv_note": "See Section 11.4.8",
+    "sdcs": "D", "sdc1": None}}}
+
+
+def test_7_16_default_site_class_sent_as_D_with_fa_floor(fake_urlopen):
+    calls, payloads = fake_urlopen
+    payloads["asce7-16/calculate"] = SLC_7_16_SITE_D
+    res = seismic.fetch_seismic(40.8254, -111.9547, "II", "Default", reference_document="ASCE7-16")
+    q = urllib.parse.parse_qs(urllib.parse.urlparse(calls[0]).query)
+    assert q["siteClass"] == ["D"]                                  # never "Default" for 7-16
+    assert res.sds == pytest.approx(2 / 3 * 1.2 * 1.568, rel=1e-6)   # §11.4.4 Fa >= 1.2
+    assert res.sd1 is None and res.sdc == "D"
+    assert res.cs_down_aisle == pytest.approx(res.sds / 6)
+    assert any("§11.4.4" in n for n in res.notes) and any("§11.4.8" in n for n in res.notes)
+    assert res.site_class == "D (default)"
+
+
+def test_7_16_explicit_site_class_D_has_no_fa_floor(fake_urlopen):
+    _, payloads = fake_urlopen
+    payloads["asce7-16/calculate"] = SLC_7_16_SITE_D
+    res = seismic.fetch_seismic(40.8254, -111.9547, "II", "D", reference_document="ASCE7-16")
+    assert res.sds == pytest.approx(1.045)
+    assert not any("§11.4.4" in n for n in res.notes)
+
+
+def test_7_22_keeps_default_site_class(fake_urlopen):
+    calls, payloads = fake_urlopen
+    payloads["asce7-22/calculate"] = USGS_OK
+    seismic.fetch_seismic(40.8, -111.9, "II", "Default", reference_document="ASCE7-22")
+    assert urllib.parse.parse_qs(urllib.parse.urlparse(calls[0]).query)["siteClass"] == ["Default"]
+
+
+@pytest.mark.parametrize("ref, sc", [("ASCE7-16", "BC"), ("ASCE7-16", "F"), ("ASCE7-22", "F"),
+                                     ("ASCE7-22", "Z")])
+def test_invalid_site_class_rejected_before_network(ref, sc):
+    with pytest.raises(ValueError, match="not valid"):
+        seismic.resolve_site_class(sc, ref)
+
+
+def test_cli_project_utah_7_16_end_to_end(monkeypatch, capsys, fake_urlopen):
+    """The exact path that failed: New Balance profile (Default site class, ASCE 7-16)."""
+    _, payloads = fake_urlopen
+    payloads["asce7-16/calculate"] = SLC_7_16_SITE_D
+    nb = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__)))), "projects", "25-1642_new_balance_slc.json")
+    assert cli.main(["--project", nb, "--levels", "6", "--shelf-load", "1800"]) == 0
+    out = capsys.readouterr().out
+    assert "SD1=n/a" in out and "SDC D" in out and "11.4.4" in out
 
 
 def test_fetch_seismic_rejects_unknown_edition():

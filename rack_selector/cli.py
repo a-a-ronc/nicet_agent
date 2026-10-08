@@ -130,7 +130,7 @@ def _seismic_from_args(args) -> SeismicResult:
     ref_doc = "ASCE7-16" if args.code_edition == "asce7-16" else "ASCE7-22"
 
     if args.offline:
-        for name in ("sds", "sd1", "s1", "sdc"):
+        for name in ("sds", "s1", "sdc"):  # SD1 optional (ASCE 7-16 §11.4.8 sites)
             if getattr(args, name) is None:
                 raise SystemExit(f"--offline requires --{name}")
         res = SeismicResult(

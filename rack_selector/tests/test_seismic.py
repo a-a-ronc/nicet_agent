@@ -60,11 +60,27 @@ def test_sdc_requirements_mention_overstrength_for_D():
 
 
 def test_endpoint_selection():
-    assert endpoint_for("ASCE7-22").endswith("asce7-22.json")
-    assert endpoint_for("ASCE7-16").endswith("asce7-16.json")
-    assert endpoint_for("asce 7-16").endswith("asce7-16.json")  # tolerant of formatting
+    assert endpoint_for("ASCE7-22").endswith("building-codes/asce7-22/calculate")
+    assert endpoint_for("ASCE7-16").endswith("building-codes/asce7-16/calculate")
+    assert endpoint_for("asce 7-16").endswith("asce7-16/calculate")  # tolerant of formatting
     with pytest.raises(ValueError):
         endpoint_for("ASCE7-10")
+
+
+@pytest.mark.parametrize("sds, sd1, s1, rc, expected", [
+    (0.10, 0.05, 0.05, "II", "A"), (0.20, None, 0.1, "II", "B"), (0.20, None, 0.1, "IV", "C"),
+    (0.40, 0.10, 0.2, "II", "C"), (1.25, None, 0.57, "II", "D"), (0.40, 0.25, 0.3, "II", "D"),
+    (1.50, 0.90, 0.80, "II", "E"), (1.50, 0.90, 0.80, "IV", "F"),
+])
+def test_determine_sdc_tables_11_6(sds, sd1, s1, rc, expected):
+    from rack_selector.seismic import determine_sdc
+    assert determine_sdc(sds, sd1, s1, rc) == expected
+
+
+def test_compute_cs_without_sd1():
+    assert compute_cs(1.25, None, 0.57, r=6.0) == pytest.approx(1.25 / 6)
+    with pytest.raises(ValueError, match="SD1"):
+        compute_cs(1.25, None, 0.57, r=6.0, t=1.0)
 
 
 def test_result_from_usgs_fixture():

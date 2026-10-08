@@ -9,7 +9,7 @@
 [![tests](https://github.com/a-a-ronc/nicet_agent/actions/workflows/tests.yml/badge.svg)](https://github.com/a-a-ronc/nicet_agent/actions/workflows/tests.yml)
 ![python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![dependencies](https://img.shields.io/badge/runtime%20deps-stdlib%20only-success)
-![tests](https://img.shields.io/badge/tests-161-blue)
+![tests](https://img.shields.io/badge/tests-178-blue)
 ![coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
 ![scope](https://img.shields.io/badge/output-triage%20only%20%E2%80%94%20not%20stamped-orange)
 
@@ -259,12 +259,12 @@ tables used for component selection.
 
 ```powershell
 python -m pip install -r requirements-dev.txt
-python -m pytest                                   # 158 pass, 3 live tests skipped
+python -m pytest                                   # 175 pass, 3 live tests skipped
 python -m coverage run -m pytest; python -m coverage report
 $env:NICET_NETWORK="1"; python -m pytest -m network   # live USGS + geocoder smoke tests
 ```
 
-**161 tests · 95 % line coverage**, plus CI on every push across **Ubuntu + Windows ×
+**178 tests · 95 % line coverage**, plus CI on every push across **Ubuntu + Windows ×
 Python 3.10 – 3.13** ([`.github/workflows/tests.yml`](.github/workflows/tests.yml), fails under 90 % coverage).
 
 | Type | What it proves | Where |
@@ -308,7 +308,7 @@ nicet_agent/
 │   ├── seismic.py · geocode.py · catalog.py · clearance.py · project.py · _io.py
 │   ├── data/                     #   rack_catalog.json · adopted_codes.json
 │   ├── methodology.md · README.md
-│   └── tests/                    #   161 tests
+│   └── tests/                    #   178 tests
 ├── .github/workflows/tests.yml   # CI: Ubuntu + Windows × Py 3.10–3.13
 ├── pytest.ini · .coveragerc · requirements-dev.txt
 ```

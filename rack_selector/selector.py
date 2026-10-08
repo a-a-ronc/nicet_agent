@@ -214,7 +214,11 @@ def render_report(rec: RackRecommendation) -> str:
     L.append("")
     L.append(f"SITE  {s.latitude:.4f}, {s.longitude:.4f}  | Risk Cat {s.risk_category} "
              f"| Site Class {s.site_class}")
-    L.append(f"  SDS={s.sds:.3f}g  SD1={s.sd1:.3f}g  S1={s.s1:.3f}g  -> SDC {s.sdc}")
+    sd1 = f"{s.sd1:.3f}g" if s.sd1 is not None else "n/a (ASCE 7-16 §11.4.8)"
+    L.append(f"  SDS={s.sds:.3f}g  SD1={sd1}  S1={s.s1:.3f}g  -> SDC {s.sdc}")
+    for n in s.notes:
+        if "§11.4" in n:
+            L.append(f"  * {n}")
     L.append(f"  Cs down-aisle (R={6.0}) = {s.cs_down_aisle:.3f}   "
              f"Cs cross-aisle (R={4.0}) = {s.cs_cross_aisle:.3f}")
     L.append("")

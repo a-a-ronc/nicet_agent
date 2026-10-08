@@ -6,6 +6,7 @@ manufacturer load/seismic tables and a licensed PE/FPE.
 
 | Tool | Answers |
 |------|---------|
+| `python -m rack_selector.ask "question"` | Where in the KB is this answered, and which tool gives the number? |
 | `python -m rack_selector.fire_check` | Do we need in-rack sprinklers — and why? |
 | `python -m rack_selector.levels` | How many levels fit (beam size × in-rack, under the sprinklers)? |
 | `python -m rack_selector` | Which frame/beam, what seismic Cs, what elevations? |

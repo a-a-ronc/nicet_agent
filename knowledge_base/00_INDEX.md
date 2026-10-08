@@ -20,6 +20,7 @@ question, then open the file(s) or run the tool below.
 ## Tools (run from the repo root)
 | Question | Command |
 |----------|---------|
+| "Where does the KB answer this?" (any question) | `python -m rack_selector.ask "your question"` — ranked sections with file:line + which tool to run |
 | "Do we need in-rack sprinklers? Why?" | `python -m rack_selector.fire_check --project projects/<job>.json` (or flags) |
 | "How many levels fit? 3.5 vs 5 in. beams, with/without in-rack?" | `python -m rack_selector.levels --load-height 31.5 --beams 3.5,5 --deflector-height-ft 49 --hole-pitch 2` |
 | "What frame/beam, seismic Cs, elevations?" | `python -m rack_selector --project projects/<job>.json --levels N --shelf-load LB` (pallets: `--pallet-weight`) |

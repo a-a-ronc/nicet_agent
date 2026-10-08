@@ -79,6 +79,12 @@ storage: **18 in. standard spray, 36 in. ESFR/CMSA**.
 - State the human-review requirement on anything that affects a permit or build.
 
 ## Tools (run from the repo root; `python -m pytest` runs the test suite)
+- `python -m rack_selector.ask "question"` — **query index over the KB**: BM25 over
+  heading-level sections of `knowledge_base/*.md` + `methodology.md` with domain synonyms;
+  returns ranked sections (file:line, best-matching line) and routes to the tool below
+  that gives the numeric answer. Index cached in `knowledge_base/_index.json` (gitignored,
+  auto-rebuilt when any KB file changes; `--rebuild` forces it). Use it to locate and
+  cite KB sections before answering.
 - `python -m rack_selector.fire_check` — **in-rack triage**: adopted editions, FM
   override, IFC Ch. 32 trigger, row classification, open rack vs. solid shelving, ESFR
   envelope + 36 in. clearance, specific-application listings above 45 ft, and in-rack

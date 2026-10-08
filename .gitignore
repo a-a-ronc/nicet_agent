@@ -22,3 +22,6 @@ Thumbs.db
 # Local scratch
 *.log
 tmp/
+
+# Generated KB query index (rebuilt automatically by rack_selector.ask)
+knowledge_base/_index.json

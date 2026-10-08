@@ -22,6 +22,7 @@ question to the right file:
 
 ## Tools (`rack_selector/`)
 ```bash
+python -m rack_selector.ask "can we avoid in-rack sprinklers with wire decks?"        # search the KB
 python -m rack_selector.fire_check --project projects/25-1642_new_balance_slc.json   # in-rack triage
 python -m rack_selector.levels --load-height 31.5 --beams 3.5,5 --deflector-height-ft 49 --hole-pitch 2
 python -m rack_selector --project projects/25-1642_new_balance_slc.json --levels 6 --shelf-load 1800
